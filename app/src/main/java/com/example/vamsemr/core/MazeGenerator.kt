@@ -1,20 +1,18 @@
 package com.example.vamsemr.core
 
+import com.example.vamsemr.data.Cell
+import com.example.vamsemr.data.Maze
 import kotlin.random.Random
 
-class MazeGenerator(private val width: Int, private val height: Int) {
-    private val maze = Array(height) { Array(width) { Cell() } }
+class MazeGenerator() {
+    private var maze = Maze(1,1)
 
-    private data class Cell(
-        var visited: Boolean = false,
-        var top: Boolean = true,
-        var bottom: Boolean = true,
-        var left: Boolean = true,
-        var right: Boolean = true
-    )
+    fun resetMaze(width: Int, height: Int) {
+        maze = Maze(width,height)
+    }
 
     fun generateMaze(x: Int = 0, y: Int = 0) {
-        maze[y][x].visited = true
+        maze.maze[y][x].visited = true
         val directions = listOf("N", "S", "E", "W").shuffled()
 
         for (direction in directions) {
@@ -26,23 +24,23 @@ class MazeGenerator(private val width: Int, private val height: Int) {
                 else -> continue
             }
 
-            if (ny in 0 until height && nx in 0 until width && !maze[ny][nx].visited) {
+            if (ny in 0 until maze.height && nx in 0 until maze.width && !maze.maze[ny][nx].visited) {
                 when (direction) {
                     "N" -> {
-                        maze[y][x].top = false
-                        maze[ny][nx].bottom = false
+                        maze.maze[y][x].top = false
+                        maze.maze[ny][nx].bottom = false
                     }
                     "S" -> {
-                        maze[y][x].bottom = false
-                        maze[ny][nx].top = false
+                        maze.maze[y][x].bottom = false
+                        maze.maze[ny][nx].top = false
                     }
                     "E" -> {
-                        maze[y][x].right = false
-                        maze[ny][nx].left = false
+                        maze.maze[y][x].right = false
+                        maze.maze[ny][nx].left = false
                     }
                     "W" -> {
-                        maze[y][x].left = false
-                        maze[ny][nx].right = false
+                        maze.maze[y][x].left = false
+                        maze.maze[ny][nx].right = false
                     }
                 }
                 generateMaze(nx, ny)
@@ -51,24 +49,37 @@ class MazeGenerator(private val width: Int, private val height: Int) {
     }
 
     fun printMaze() {
-        for (y in 0 until height) {
-            // Print top walls
-            for (x in 0 until width) {
-                print(if (maze[y][x].top) "+---" else "+   ")
+        for (y in 0 until maze.height) {
+            // top wall
+            for (x in 0 until maze.width) {
+                print(
+                    if (maze.maze[y][x].top)
+                        "+---"
+                    else
+                        "+   "
+                )
             }
             println("+")
 
-            // Print left walls and spaces
-            for (x in 0 until width) {
-                print(if (maze[y][x].left) "|   " else "    ")
+            // left wall or space
+            for (x in 0 until maze.width) {
+                print(
+                    if (maze.maze[y][x].left)
+                        "|   "
+                    else
+                        "    "
+                )
             }
+            // end wall
             println("|")
         }
 
-        // Print bottom border
-        for (x in 0 until width) {
+        // bottom wall
+        for (x in 0 until maze.width) {
             print("+---")
         }
+
+        // end bottom
         println("+")
     }
 }
