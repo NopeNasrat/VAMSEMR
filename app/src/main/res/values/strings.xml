@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">VAMSEMR</string>
+    <string name="adduser">Add new user</string>
+    <string name="next">Next</string>
+    <string name="removeuser">Remove User</string>
+
+
+
+    <string name="nesxt">Next</string>
+    <string name="nexssat">Next</string>
+    <string name="nedsaxt">Next</string>
+    <string name="nedasdxt">Next</string>
+
+
 </resources>
