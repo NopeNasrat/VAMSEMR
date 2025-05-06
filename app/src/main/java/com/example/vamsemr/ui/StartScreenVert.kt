@@ -13,10 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.inventory.data.Item
 import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.R
 
@@ -119,31 +122,48 @@ fun AddUserDialog(
 
 @Composable
 fun ScrollableBoxSelection(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
+    // Získanie všetkých položiek z databázy
+    val items by viewModel.getAllItems().collectAsState(initial = emptyList())
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        repeat(20) { index ->  // viac boxov, aby si videl scroll
-            SelectableBox("Box #${index + 1}")
+        // Dynamicky vytvárame boxy pre každú položku
+        items.forEach { item ->
+            SelectableBox(item = item)
         }
     }
 }
 
 @Composable
-fun SelectableBox(text: String) {
+fun SelectableBox(item: Item) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
-            .height(50.dp)
-            .background(Color.LightGray),
-        contentAlignment = Alignment.Center
+            .height(80.dp)
+            .background(Color.LightGray)
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterStart
     ) {
-        Text(text = text)
+        Column {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = stringResource(id = R.string.id_label, item.id), style = MaterialTheme.typography.bodyLarge)
+                Text(text = stringResource(id = R.string.name_label, item.name), style = MaterialTheme.typography.bodyLarge)
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = stringResource(id = R.string.skore_label, item.skore), style = MaterialTheme.typography.bodyLarge)
+                Text(text = stringResource(id = R.string.games_label, item.games), style = MaterialTheme.typography.bodyLarge)
+            }
+        }
     }
 }
+
+
+
 
 @Composable
 fun BottomButton(modifier: Modifier = Modifier) {

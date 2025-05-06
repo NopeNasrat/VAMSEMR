@@ -11,5 +11,9 @@
     <string name="pridat">Pridať</string>
     <string name="zrusit">Zrušiť</string>
 
+    <string name="id_label">ID: %1$d</string>
+    <string name="name_label">Name: %1$s</string>
+    <string name="skore_label">Skore: %1$d</string>
+    <string name="games_label">Games: %1$d</string>
 
 </resources>
