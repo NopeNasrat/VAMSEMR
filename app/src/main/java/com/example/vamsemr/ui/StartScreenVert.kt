@@ -1,6 +1,7 @@
 package com.example.vamsemr.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,10 @@ import com.example.vamsemr.R
 fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
     var isDialogOpen by remember { mutableStateOf(false) }
     var isRemoveDialogOpen by remember { mutableStateOf(false) }
+    var selectedItemId by remember { mutableStateOf<Int?>(null) }
+
+    val selectedItem by viewModel.getItemById(selectedItemId ?: -1).collectAsState(initial = null)
+
 
     Column(
         modifier = modifier
@@ -55,9 +60,22 @@ fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
             onRemoveClick = { isRemoveDialogOpen = true }
         )
 
-        ScrollableBoxSelection(viewModel, modifier = Modifier.weight(1f))
+        ScrollableBoxSelection(
+            viewModel,
+            modifier = Modifier.weight(1f),
+            selectedItemId = selectedItemId,
+            onItemSelected = { selectedItemId = it }
+        )
 
-        BottomButton(modifier = Modifier)
+        BottomButton(modifier = Modifier,
+            onNextClick = {
+                if (selectedItem != null) {
+                    println("Selected item: ${selectedItem?.id}")
+                } else {
+                    println("No item selected or item removed")
+                }
+            }
+        )
     }
 
     if (isDialogOpen) {
@@ -180,8 +198,12 @@ fun RemoveUserDialog(
 }
 
 @Composable
-fun ScrollableBoxSelection(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
-    // Získanie všetkých položiek z databázy
+fun ScrollableBoxSelection(
+    viewModel: ItemViewModel,
+    modifier: Modifier = Modifier,
+    selectedItemId: Int?,
+    onItemSelected: (Int) -> Unit
+) {
     val items by viewModel.getAllItems().collectAsState(initial = emptyList())
 
     Column(
@@ -190,22 +212,35 @@ fun ScrollableBoxSelection(viewModel: ItemViewModel, modifier: Modifier = Modifi
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Dynamicky vytvárame boxy pre každú položku
         items.forEach { item ->
-            SelectableBox(item = item)
+            SelectableBox(
+                item = item,
+                isSelected = selectedItemId == item.id, // Určujeme, či je vybraný
+                onClick = { clickedItem ->
+                    onItemSelected(clickedItem.id) // Vyberieme aktuálny item
+                }
+            )
         }
     }
 }
 
+
 @Composable
-fun SelectableBox(item: Item) {
+fun SelectableBox(
+    item: Item,
+    isSelected: Boolean,
+    onClick: (Item) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .height(80.dp)
-            .background(Color.LightGray)
-            .padding(16.dp),
+            .background(if (isSelected) Color.Yellow else Color.LightGray) // Ak je vybraný, nastaví sa modrá farba
+            .padding(16.dp)
+            .clickable {
+                onClick(item) // Volanie callbacku pre rodiča, ktorý zmení stav
+            },
         contentAlignment = Alignment.CenterStart
     ) {
         Column {
@@ -224,10 +259,12 @@ fun SelectableBox(item: Item) {
 
 
 
+
+
 @Composable
-fun BottomButton(modifier: Modifier = Modifier) {
+fun BottomButton(modifier: Modifier = Modifier, onNextClick: () -> Unit) {
     Button(
-        onClick = { /* akcia dole */ },
+        onClick = onNextClick,
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
@@ -235,4 +272,3 @@ fun BottomButton(modifier: Modifier = Modifier) {
         Text(stringResource(R.string.next))
     }
 }
-

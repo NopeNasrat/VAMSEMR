@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemsRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -18,6 +19,10 @@ class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
             val newItem = Item(id = id, name = name, skore = skore, games = games)
             itemsRepository.insertItem(newItem)
         }
+    }
+
+    fun getItemById(id: Int): Flow<Item?> {
+        return itemsRepository.getItemStream(id)
     }
 
 

@@ -21,7 +21,7 @@ interface ItemDao {
     suspend fun delete(item: Item)
 
     @Query("SELECT * from profils WHERE id = :id")
-    fun getItem(id: Int): Flow<Item>
+    fun getItem(id: Int): Flow<Item?>
 
     @Query("SELECT * from profils ORDER BY name ASC")
     fun getAllItems(): Flow<List<Item>>
