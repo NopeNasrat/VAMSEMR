@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.inventory.data.Item
 import com.example.inventory.ui.ItemViewModel
@@ -36,6 +39,7 @@ import com.example.vamsemr.R
 @Composable
 fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
     var isDialogOpen by remember { mutableStateOf(false) }
+    var isRemoveDialogOpen by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -46,7 +50,10 @@ fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(26.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopButton(onAddClick = { isDialogOpen = true })
+        TopButton(
+            onAddClick = { isDialogOpen = true },
+            onRemoveClick = { isRemoveDialogOpen = true }
+        )
 
         ScrollableBoxSelection(viewModel, modifier = Modifier.weight(1f))
 
@@ -64,19 +71,29 @@ fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
             onDismiss = { isDialogOpen = false }
         )
     }
+    // Odstránenie používateľa
+    if (isRemoveDialogOpen) {
+        RemoveUserDialog(
+            onConfirm = { id ->
+                viewModel.deleteItemById(id)
+                isRemoveDialogOpen = false
+            },
+            onDismiss = { isRemoveDialogOpen = false }
+        )
+    }
 
 }
 
 @Composable
-fun TopButton(onAddClick: () -> Unit) {
+fun TopButton(onAddClick: () -> Unit, onRemoveClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Button(onClick = onAddClick) {
-            Text(text = stringResource(R.string.adduser))
+            Text(text = stringResource(R.string.pridajhraca))
         }
-        Button(onClick = { /* akcia: odstrániť */ }) {
+        Button(onClick = onRemoveClick) {
             Text(text = stringResource(R.string.removeuser))
         }
     }
@@ -119,6 +136,48 @@ fun AddUserDialog(
     )
 }
 
+@Composable
+fun RemoveUserDialog(
+    onConfirm: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var userId by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.removeuser)) },
+        text = {
+            TextField(
+                value = userId,
+                onValueChange = { userId = it },
+                label = { Text(stringResource(R.string.enter_id)) },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions.Default
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (userId.isNotBlank()) {
+                        try {
+                            onConfirm(userId.toInt())
+                        } catch (e: NumberFormatException) {
+                            println((R.string.error_id))
+                        }
+
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.remove))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(stringResource(R.string.zrusit))
+            }
+        }
+    )
+}
 
 @Composable
 fun ScrollableBoxSelection(viewModel: ItemViewModel, modifier: Modifier = Modifier) {

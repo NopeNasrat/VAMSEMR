@@ -1,13 +1,15 @@
 <resources>
     <string name="app_name">VAMSEMR</string>
-    <string name="adduser">Add new user</string>
+
     <string name="next">Next</string>
-    <string name="removeuser">Remove User</string>
 
     <string name="pridajhraca">Pridať hráča</string>
+    <string name="removeuser">Odstrániť hráča</string>
+
     <string name="menohraca">Meno hráča</string>
+    <string name="enter_id">Zadajte ID používateľa</string>
 
-
+    <string name="remove">Odstrániť</string>
     <string name="pridat">Pridať</string>
     <string name="zrusit">Zrušiť</string>
 
@@ -16,4 +18,7 @@
     <string name="skore_label">Skore: %1$d</string>
     <string name="games_label">Games: %1$d</string>
 
+    //error
+
+    <string name="error_id">Zadané ID nie je číslo</string>
 </resources>
