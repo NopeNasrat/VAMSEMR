@@ -26,11 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.R
 
 
 @Composable
-fun MainScreenV1(modifier: Modifier = Modifier) {
+fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
     var isDialogOpen by remember { mutableStateOf(false) }
 
     Column(
@@ -44,7 +45,7 @@ fun MainScreenV1(modifier: Modifier = Modifier) {
     ) {
         TopButton(onAddClick = { isDialogOpen = true })
 
-        ScrollableBoxSelection(modifier = Modifier.weight(1f))
+        ScrollableBoxSelection(viewModel, modifier = Modifier.weight(1f))
 
         BottomButton(modifier = Modifier)
     }
@@ -52,12 +53,7 @@ fun MainScreenV1(modifier: Modifier = Modifier) {
     if (isDialogOpen) {
         AddUserDialog(
             onConfirm = { name ->
-
-
-
-
-
-
+                viewModel.addItem(name = name, skore = 0, games = 0)
 
                 //println("Pridaný používateľ: $name")
                 isDialogOpen = false
@@ -122,7 +118,7 @@ fun AddUserDialog(
 
 
 @Composable
-fun ScrollableBoxSelection(modifier: Modifier = Modifier) {
+fun ScrollableBoxSelection(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()

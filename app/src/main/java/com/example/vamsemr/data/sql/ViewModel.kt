@@ -1,8 +1,9 @@
 package com.example.inventory.ui
 
-
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemsRepository
 import kotlinx.coroutines.launch
@@ -28,11 +29,10 @@ class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
         }
     }
 }
-/*
-// Factory na vytvorenie ViewModelu s parametrami
+
+
 class ItemViewModelFactory(private val itemsRepository: ItemsRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         return ItemViewModel(itemsRepository) as T
     }
 }
-*/
