@@ -4,12 +4,12 @@
     <string name="next">Next</string>
     <string name="removeuser">Remove User</string>
 
+    <string name="pridajhraca">Pridať hráča</string>
+    <string name="menohraca">Meno hráča</string>
 
 
-    <string name="nesxt">Next</string>
-    <string name="nexssat">Next</string>
-    <string name="nedsaxt">Next</string>
-    <string name="nedasdxt">Next</string>
+    <string name="pridat">Pridať</string>
+    <string name="zrusit">Zrušiť</string>
 
 
 </resources>

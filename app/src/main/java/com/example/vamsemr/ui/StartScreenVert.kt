@@ -11,9 +11,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +31,8 @@ import com.example.vamsemr.R
 
 @Composable
 fun MainScreenV1(modifier: Modifier = Modifier) {
+    var isDialogOpen by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -33,28 +42,76 @@ fun MainScreenV1(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(26.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopButton()
+        TopButton(onAddClick = { isDialogOpen = true })
 
         ScrollableBoxSelection(modifier = Modifier.weight(1f))
 
         BottomButton(modifier = Modifier)
     }
+
+    if (isDialogOpen) {
+        AddUserDialog(
+            onConfirm = { name ->
+                // Sem daj logiku na pridanie používateľa
+                println("Pridaný používateľ: $name")
+                isDialogOpen = false
+            },
+            onDismiss = { isDialogOpen = false }
+        )
+    }
+
 }
 
 @Composable
-fun TopButton() {
+fun TopButton(onAddClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(onClick = { /* akcia: pridať */ }) {
+        Button(onClick = onAddClick) {
             Text(text = stringResource(R.string.adduser))
         }
         Button(onClick = { /* akcia: odstrániť */ }) {
             Text(text = stringResource(R.string.removeuser))
         }
     }
+}
+
+
+@Composable
+fun AddUserDialog(
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var userName by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.pridajhraca)) },
+        text = {
+            TextField(
+                value = userName,
+                onValueChange = { userName = it },
+                label = { Text(stringResource(R.string.menohraca)) }
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (userName.isNotBlank()) {
+                        onConfirm(userName)
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.pridat))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(stringResource(R.string.zrusit))
+            }
+        }
+    )
 }
 
 
@@ -66,7 +123,7 @@ fun ScrollableBoxSelection(modifier: Modifier = Modifier) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        repeat(5) { index ->  // viac boxov, aby si videl scroll
+        repeat(20) { index ->  // viac boxov, aby si videl scroll
             SelectableBox("Box #${index + 1}")
         }
     }
