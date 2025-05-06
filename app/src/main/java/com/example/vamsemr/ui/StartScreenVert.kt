@@ -52,8 +52,14 @@ fun MainScreenV1(modifier: Modifier = Modifier) {
     if (isDialogOpen) {
         AddUserDialog(
             onConfirm = { name ->
-                // Sem daj logiku na pridanie používateľa
-                println("Pridaný používateľ: $name")
+
+
+
+
+
+
+
+                //println("Pridaný používateľ: $name")
                 isDialogOpen = false
             },
             onDismiss = { isDialogOpen = false }
