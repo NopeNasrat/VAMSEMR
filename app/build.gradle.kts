@@ -58,6 +58,7 @@ dependencies {
     // Room (Database)
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+    //implementation(libs.androidx.navigation.compose.jvmstubs)
     //implementation(libs.ads.mobile.sdk)
 
     // KSP pre Room

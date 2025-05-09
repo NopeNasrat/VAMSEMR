@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.inventory.data.AppDataContainer
 import com.example.inventory.ui.ItemViewModel
 import com.example.inventory.ui.ItemViewModelFactory
+import com.example.vamsemr.Navigation.VamsemrNavHost
 import com.example.vamsemr.ui.theme.VAMSEMRTheme
 import com.example.vamsemr.ui.*
 
@@ -31,8 +33,18 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
         setContent {
             VAMSEMRTheme {
+
+                val navController = rememberNavController()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    /*
                     Greeting(
+                        viewModel = viewModel,
+                        modifier = Modifier.padding(innerPadding)
+                    )*/
+
+                    VamsemrNavHost(
+                        navController = navController,
                         viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )

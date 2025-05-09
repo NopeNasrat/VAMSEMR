@@ -34,7 +34,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.inventory.data.Item
 import com.example.inventory.ui.ItemViewModel
+import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.R
+
+
+object HomeDestination : NavigationDestination {
+    override val route = "home"
+    override val titleRes: Int = 0 // Zatiaľ nepotrebuješ názov z resources
+}
+
 
 
 @Composable
