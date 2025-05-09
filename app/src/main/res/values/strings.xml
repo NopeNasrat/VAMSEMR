@@ -2,6 +2,8 @@
     <string name="app_name">VAMSEMR</string>
 
     <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="start">Start</string>
 
     <string name="pridajhraca">Pridať hráča</string>
     <string name="removeuser">Odstrániť hráča</string>
@@ -14,9 +16,19 @@
     <string name="zrusit">Zrušiť</string>
 
     <string name="id_label">ID: %1$d</string>
-    <string name="name_label">Name: %1$s</string>
-    <string name="skore_label">Skore: %1$d</string>
-    <string name="games_label">Games: %1$d</string>
+    <string name="name_label">Meno: %1$s</string>
+    <string name="skore_label">Skóre: %1$d</string>
+    <string name="games_label">Hry: %1$d</string>
+
+    //screenvert2
+
+    <string name="playerinfotext">Informácie o hráčovi</string>
+    <string name="mazesizetext">Veľkosť bludiska:</string>
+    <string name="_100x100">100 x 100</string>
+    <string name="_50x50">50 x 50</string>
+    <string name="_25x25">25 x 25</string>
+    <string name="_5x5">5 x 5</string>
+
 
     //error
 

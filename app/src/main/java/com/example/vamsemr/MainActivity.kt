@@ -55,9 +55,9 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
+/*
 
 @Composable
 fun Greeting(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
     MainScreenV1(viewModel = viewModel ,modifier);
-}
+}*/

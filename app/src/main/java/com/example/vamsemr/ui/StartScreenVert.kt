@@ -32,10 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.inventory.data.Item
 import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.Navigation.NavigationDestination
+import com.example.vamsemr.Navigation.Screen
 import com.example.vamsemr.R
+import com.example.vamsemr.data.Player
+import com.example.vamsemr.data.PlayerViewModel
 
 
 object HomeDestination : NavigationDestination {
@@ -46,13 +50,19 @@ object HomeDestination : NavigationDestination {
 
 
 @Composable
-fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
+fun MainScreenV1(
+    viewModel: ItemViewModel,
+    playerViewModel: PlayerViewModel,
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
     var isDialogOpen by remember { mutableStateOf(false) }
     var isRemoveDialogOpen by remember { mutableStateOf(false) }
     var selectedItemId by remember { mutableStateOf<Int?>(null) }
 
     val selectedItem by viewModel.getItemById(selectedItemId ?: -1).collectAsState(initial = null)
 
+    val player by playerViewModel.player
 
     Column(
         modifier = modifier
@@ -78,9 +88,18 @@ fun MainScreenV1(viewModel: ItemViewModel, modifier: Modifier = Modifier) {
         BottomButton(modifier = Modifier,
             onNextClick = {
                 if (selectedItem != null) {
-                    println("Selected item: ${selectedItem?.id}")
-                } else {
-                    println("No item selected or item removed")
+                    selectedItem?.let { item ->
+                        playerViewModel.updatePlayer(
+                            player.copy(
+                                id = item.id,
+                                name = item.name,
+                                skore = item.skore,
+                                games = item.games
+                            )
+                        )
+                    }
+                    //navController.navigate(HomeDestinationvert2.route)
+                    navController.navigate(Screen.SCREEN2VERT2.route)
                 }
             }
         )
@@ -223,9 +242,9 @@ fun ScrollableBoxSelection(
         items.forEach { item ->
             SelectableBox(
                 item = item,
-                isSelected = selectedItemId == item.id, // Určujeme, či je vybraný
+                isSelected = selectedItemId == item.id,
                 onClick = { clickedItem ->
-                    onItemSelected(clickedItem.id) // Vyberieme aktuálny item
+                    onItemSelected(clickedItem.id)
                 }
             )
         }
@@ -244,10 +263,10 @@ fun SelectableBox(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .height(80.dp)
-            .background(if (isSelected) Color.Yellow else Color.LightGray) // Ak je vybraný, nastaví sa modrá farba
+            .background(if (isSelected) Color.Yellow else Color.LightGray)
             .padding(16.dp)
             .clickable {
-                onClick(item) // Volanie callbacku pre rodiča, ktorý zmení stav
+                onClick(item)
             },
         contentAlignment = Alignment.CenterStart
     ) {
