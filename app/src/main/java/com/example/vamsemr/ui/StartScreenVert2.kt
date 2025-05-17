@@ -33,6 +33,7 @@ import com.example.vamsemr.data.MazeInfo
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.Player
 import com.example.vamsemr.data.PlayerViewModel
+import com.example.vamsemr.data.ScreenViewModel
 import kotlinx.coroutines.selects.select
 
 
@@ -44,6 +45,7 @@ object HomeDestinationvert2 : NavigationDestination {
 
 @Composable
 fun StartScreenVert2(
+    screenViewModel: ScreenViewModel,
     playerViewModel: PlayerViewModel,
     modifier: Modifier = Modifier,
     mazeInfoViewModel: MazeInfoViewModel,
@@ -88,7 +90,12 @@ fun StartScreenVert2(
                         )
                         mazeInfoViewModel.updateMazeInfo(newMazeInfo)
                     }
-                    navController.navigate(Screen.GAME.route)
+                    screenViewModel.setStage(2)
+                    navController.navigate(Screen.GAME.route) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+
                 }
             }
             //onNextClick = { navController.navigate(Screen.GAME.route) }
@@ -146,9 +153,14 @@ fun PlayerInfoSection(player: Player, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun MazeSizeSection(modifier: Modifier = Modifier,
-                    selectedButton: Int?,
-                    onButtonClick: (Int) -> Unit) {
+fun MazeSizeSection(
+    modifier: Modifier = Modifier,
+    selectedButton: Int?,
+    onButtonClick: (Int) -> Unit,
+    buttonModifier: Modifier = Modifier
+        .fillMaxWidth(0.6f)
+        .height(60.dp)
+) {
 
     //var selectedButton by remember { mutableStateOf<Int?>(null) }
 
@@ -167,9 +179,9 @@ fun MazeSizeSection(modifier: Modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val buttonModifier = Modifier
+            /*val buttonModifier = Modifier
                 .fillMaxWidth(0.6f)
-                .height(60.dp)
+                .height(60.dp)*/
 
             val small = 5
             val medium = 25

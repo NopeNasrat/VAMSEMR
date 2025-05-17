@@ -30,32 +30,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.inventory.data.Item
 import com.example.inventory.ui.ItemViewModel
+import com.example.vamsemr.Navigation.ConfirmExitOnBackHandler
 import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.Navigation.Screen
 import com.example.vamsemr.R
 import com.example.vamsemr.data.Player
 import com.example.vamsemr.data.PlayerViewModel
+import com.example.vamsemr.data.ScreenViewModel
 
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
-    override val titleRes: Int = 0 // Zatiaľ nepotrebuješ názov z resources
+    override val titleRes: Int = 0
 }
 
 
 
 @Composable
 fun MainScreenV1(
+    screenViewModel: ScreenViewModel,
     viewModel: ItemViewModel,
     playerViewModel: PlayerViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
+
+    ConfirmExitOnBackHandler {
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
+
     var isDialogOpen by remember { mutableStateOf(false) }
     var isRemoveDialogOpen by remember { mutableStateOf(false) }
     var selectedItemId by remember { mutableStateOf<Int?>(null) }
@@ -144,7 +153,6 @@ fun TopButton(onAddClick: () -> Unit, onRemoveClick: () -> Unit) {
     }
 }
 
-
 @Composable
 fun AddUserDialog(
     onConfirm: (String) -> Unit,
@@ -159,7 +167,15 @@ fun AddUserDialog(
             TextField(
                 value = userName,
                 onValueChange = { userName = it },
-                label = { Text(stringResource(R.string.menohraca)) }
+                label = { Text(stringResource(R.string.menohraca)) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (userName.isNotBlank()) {
+                            onConfirm(userName)
+                        }
+                    }
+                )
             )
         },
         confirmButton = {
@@ -196,8 +212,21 @@ fun RemoveUserDialog(
                 value = userId,
                 onValueChange = { userId = it },
                 label = { Text(stringResource(R.string.enter_id)) },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                keyboardActions = KeyboardActions.Default
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (userId.isNotBlank()) {
+                            try {
+                                onConfirm(userId.toInt())
+                            } catch (e: NumberFormatException) {
+                                println((R.string.error_id)) // môžeš nahradiť Snackbar/Toast
+                            }
+                        }
+                    }
+                )
             )
         },
         confirmButton = {
@@ -209,7 +238,6 @@ fun RemoveUserDialog(
                         } catch (e: NumberFormatException) {
                             println((R.string.error_id))
                         }
-
                     }
                 }
             ) {
@@ -223,6 +251,7 @@ fun RemoveUserDialog(
         }
     )
 }
+
 
 @Composable
 fun ScrollableBoxSelection(
@@ -289,13 +318,13 @@ fun SelectableBox(
 
 
 @Composable
-fun BottomButton(modifier: Modifier = Modifier, onNextClick: () -> Unit) {
+fun BottomButton(modifier: Modifier = Modifier, onNextClick: () -> Unit,buttontext: String = stringResource(R.string.next)) {
     Button(
         onClick = onNextClick,
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text(stringResource(R.string.next))
+        Text(buttontext)
     }
 }

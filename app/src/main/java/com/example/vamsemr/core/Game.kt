@@ -15,12 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.vamsemr.Navigation.ConfirmExitOnBackHandler
 import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.R
 import com.example.vamsemr.data.MazeInfo
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.Player
 import com.example.vamsemr.data.PlayerViewModel
+import com.example.vamsemr.data.ScreenViewModel
 import com.example.vamsemr.ui.PlayerInfoSection
 
 
@@ -31,14 +33,19 @@ object GameScreen : NavigationDestination {
 
 
 @Composable
-fun Game(playerViewModel: PlayerViewModel,
-         modifier: Modifier = Modifier,
-         mazeInfoViewModel: MazeInfoViewModel,
-         navController: NavHostController
+fun Game(
+    playerViewModel: PlayerViewModel,
+    screenViewModel: ScreenViewModel,
+    modifier: Modifier = Modifier,
+    mazeInfoViewModel: MazeInfoViewModel,
+    navController: NavHostController
 ) {
     val player by playerViewModel.player
     val mazeInfo by mazeInfoViewModel.MazeInfo
 
+    ConfirmExitOnBackHandler {
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
 
     Column(
         modifier = modifier.fillMaxSize(),

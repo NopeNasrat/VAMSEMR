@@ -29,6 +29,14 @@
     <string name="_25x25">25 x 25</string>
     <string name="_5x5">5 x 5</string>
 
+    <string name="selectmazesizetext">Zadaná veľkosť bludiska:</string>
+
+
+
+    <string name="realexitapp">Naozaj chceš aplikáciu ukončiť?</string>
+    <string name="exitapp">Ukončiť aplikáciu?</string>
+    <string name="yes">Áno</string>
+    <string name="no">Nie</string>
 
     //error
 
