@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +45,21 @@ fun Game(
 ) {
     val player by playerViewModel.player
     val mazeInfo by mazeInfoViewModel.MazeInfo
+    val maze by gameViewModel.Maze
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
     }
+
+    LaunchedEffect(mazeInfo.x, mazeInfo.y) {
+        if (mazeInfo.x != maze.width || mazeInfo.y != maze.height) {
+            gameViewModel.updateSize(mazeInfo.x, mazeInfo.y)
+            gameViewModel.resetMaze(mazeInfoViewModel)
+        }
+    }
+
+
+
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -55,7 +67,7 @@ fun Game(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        PlayerInfoSection(player = player,mazeInfo = mazeInfo, modifier = Modifier.padding(top = 35.dp))
+        //PlayerInfoSection(player = player,mazeInfo = mazeInfo, modifier = Modifier.padding(top = 35.dp))
 
 
 

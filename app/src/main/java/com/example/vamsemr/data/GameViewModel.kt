@@ -3,6 +3,8 @@ package com.example.vamsemr.data
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.vamsemr.core.findFinish
+import com.example.vamsemr.core.findPlayer
 import com.example.vamsemr.core.floodMaze
 import com.example.vamsemr.core.generateMaze
 import com.example.vamsemr.core.generatePlayer
@@ -15,6 +17,11 @@ class GameViewModel : ViewModel() {
     private val _Maze = mutableStateOf(Maze(x,y))
     val Maze: State<Maze> get() = _Maze
 
+    fun setAndResetMaze(newX: Int, newY: Int,mazeInfoViewModel: MazeInfoViewModel) {
+        updateSize(newX, newY)
+        resetMaze(mazeInfoViewModel)
+    }
+
     fun updateSize(newX: Int, newY: Int) {
         if (newX >= 2) x = newX
         if (newY >= 2) y = newY
@@ -25,7 +32,7 @@ class GameViewModel : ViewModel() {
         _Maze.value = newMaze
     }
 
-    fun resetMaze() {
+    fun resetMaze(mazeInfoViewModel: MazeInfoViewModel) {
         var newMaze: Maze
         do {
             newMaze = Maze(x, y)
@@ -36,6 +43,8 @@ class GameViewModel : ViewModel() {
         } while (!verifyMaze(newMaze))
 
         _Maze.value = newMaze
+        findFinish(this, mazeInfoViewModel)
+        findPlayer(this, mazeInfoViewModel)
     }
 
 }

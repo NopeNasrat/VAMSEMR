@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vamsemr.data.Cell
 import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.Maze
+import com.example.vamsemr.data.MazeInfoViewModel
 import kotlin.random.Random
 
 /*
@@ -12,31 +13,126 @@ class MazeGenerator() {
     private var maze = Maze(1,1)*/
 
 
-
+/*
 @Composable
 fun resetMaze(gameViewModel: GameViewModel) {
     gameViewModel.resetMaze()
-}
+}*/
+
 
 @Composable
+fun winCheck(
+    gameViewModel: GameViewModel,
+    mazeInfoViewModel: MazeInfoViewModel
+): Boolean {
+    val maze = gameViewModel.Maze.value
+    val playerX = mazeInfoViewModel.MazeInfo.value.playerX
+    val playerY = mazeInfoViewModel.MazeInfo.value.playerY
+    val finishX = mazeInfoViewModel.MazeInfo.value.finishX
+    val finishY = mazeInfoViewModel.MazeInfo.value.finishY
+
+
+    if (playerX !in 0 until maze.width || playerY !in 0 until maze.height) return false
+    if (finishX !in 0 until maze.width || finishY !in 0 until maze.height) return false
+
+
+    return playerX == finishX && playerY == finishY
+}
+
+
+
+
+fun findFinish (
+    gameViewModel: GameViewModel,
+    mazeInfoViewModel: MazeInfoViewModel
+): Boolean {
+    val maze = gameViewModel.Maze.value
+
+    var finishX = mazeInfoViewModel.MazeInfo.value.finishX
+    var finishY = mazeInfoViewModel.MazeInfo.value.finishY
+
+    val finishExistsAtStoredPos = finishX in 0 until maze.width &&
+            finishY in 0 until maze.height &&
+            maze.maze[finishY][finishX].finish
+
+    if (finishExistsAtStoredPos) {
+        return true
+    } else {
+        finishX = -1
+        finishY = -1
+        loop@ for (y in 0 until maze.height) {
+            for (x in 0 until maze.width) {
+                if (maze.maze[y][x].finish) {
+                    finishX = x
+                    finishY = y
+                    break@loop
+                }
+            }
+        }
+
+        mazeInfoViewModel.updateMazeFinish(
+            mazeInfoViewModel.MazeInfo.value.copy(
+                finishX = finishX,
+                finishY = finishY
+            )
+        )
+
+        return finishX != -1 || finishY != -1
+    }
+}
+
+
+fun findPlayer (
+    gameViewModel: GameViewModel,
+    mazeInfoViewModel: MazeInfoViewModel
+): Boolean {
+    val maze = gameViewModel.Maze.value
+
+    var playerX = mazeInfoViewModel.MazeInfo.value.playerX
+    var playerY = mazeInfoViewModel.MazeInfo.value.playerY
+
+    val playerExistsAtStoredPos = playerX in 0 until maze.width &&
+            playerY in 0 until maze.height &&
+            maze.maze[playerY][playerX].player
+
+    if (playerExistsAtStoredPos) {
+        return true
+    } else {
+        playerX = -1
+        playerY = -1
+        loop@ for (y in 0 until maze.height) {
+            for (x in 0 until maze.width) {
+                if (maze.maze[y][x].player) {
+                    playerX = x
+                    playerY = y
+                    break@loop
+                }
+            }
+        }
+        mazeInfoViewModel.updateMazePlayer(
+            mazeInfoViewModel.MazeInfo.value.copy(
+                playerX = playerX,
+                playerY = playerY
+            )
+        )
+        return playerX != -1 || playerY != -1
+    }
+}
+
+
 fun movePlayer(
     gameViewModel: GameViewModel,
+    mazeInfoViewModel: MazeInfoViewModel,
     smer: Smer
 ) {
     val maze = gameViewModel.Maze.value
 
-    var playerX = -1
-    var playerY = -1
-    loop@ for (y in 0 until maze.height) {
-        for (x in 0 until maze.width) {
-            if (maze.maze[y][x].player) {
-                playerX = x
-                playerY = y
-                break@loop
-            }
-        }
-    }
-    if (playerX == -1 || playerY == -1) return // hráč neexistuje
+
+    if (!findPlayer(gameViewModel,mazeInfoViewModel)) return
+    var playerX = mazeInfoViewModel.MazeInfo.value.playerX
+    var playerY = mazeInfoViewModel.MazeInfo.value.playerY
+
+
 
     val canMove = when(smer) {
         Smer.UP -> playerY > 0 && !maze.maze[playerY][playerX].top
@@ -47,12 +143,22 @@ fun movePlayer(
     if (!canMove) return
 
     maze.maze[playerY][playerX].player = false
+
     when (smer) {
-        Smer.UP -> maze.maze[playerY - 1][playerX].player = true
-        Smer.DOWN -> maze.maze[playerY + 1][playerX].player = true
-        Smer.LEFT -> maze.maze[playerY][playerX - 1].player = true
-        Smer.RIGHT -> maze.maze[playerY][playerX + 1].player = true
+        Smer.UP -> playerY -= 1
+        Smer.DOWN -> playerY += 1
+        Smer.LEFT -> playerX -= 1
+        Smer.RIGHT -> playerX += 1
     }
+    maze.maze[playerY][playerX].player = true
+
+    mazeInfoViewModel.updateMazePlayer(
+        mazeInfoViewModel.MazeInfo.value.copy(
+            playerX = playerX,
+            playerY = playerY
+        )
+    )
+
     gameViewModel.updateMaze(maze)
 }
 
