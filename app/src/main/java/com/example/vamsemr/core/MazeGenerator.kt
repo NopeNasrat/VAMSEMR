@@ -14,9 +14,46 @@ class MazeGenerator() {
 
 
 @Composable
-fun resetMaze() {
-    val gameViewModel: GameViewModel = viewModel()
-    gameViewModel.updateMazeInfo()
+fun resetMaze(gameViewModel: GameViewModel) {
+    gameViewModel.resetMaze()
+}
+
+@Composable
+fun movePlayer(
+    gameViewModel: GameViewModel,
+    smer: Smer
+) {
+    val maze = gameViewModel.Maze.value
+
+    var playerX = -1
+    var playerY = -1
+    loop@ for (y in 0 until maze.height) {
+        for (x in 0 until maze.width) {
+            if (maze.maze[y][x].player) {
+                playerX = x
+                playerY = y
+                break@loop
+            }
+        }
+    }
+    if (playerX == -1 || playerY == -1) return // hráč neexistuje
+
+    val canMove = when(smer) {
+        Smer.UP -> playerY > 0 && !maze.maze[playerY][playerX].top
+        Smer.DOWN -> playerY < maze.height - 1 && !maze.maze[playerY][playerX].bottom
+        Smer.LEFT -> playerX > 0 && !maze.maze[playerY][playerX].left
+        Smer.RIGHT -> playerX < maze.width - 1 && !maze.maze[playerY][playerX].right
+    }
+    if (!canMove) return
+
+    maze.maze[playerY][playerX].player = false
+    when (smer) {
+        Smer.UP -> maze.maze[playerY - 1][playerX].player = true
+        Smer.DOWN -> maze.maze[playerY + 1][playerX].player = true
+        Smer.LEFT -> maze.maze[playerY][playerX - 1].player = true
+        Smer.RIGHT -> maze.maze[playerY][playerX + 1].player = true
+    }
+    gameViewModel.updateMaze(maze)
 }
 
 

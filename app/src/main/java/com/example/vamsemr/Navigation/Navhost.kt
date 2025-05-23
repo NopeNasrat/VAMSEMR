@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.compose.runtime.getValue
 import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.core.Game
+import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.PlayerViewModel
 import com.example.vamsemr.data.ScreenViewModel
@@ -31,6 +32,7 @@ fun VamsemrNavHost(
 
     val playerViewModel: PlayerViewModel = viewModel()
     val mazeInfoViewModel: MazeInfoViewModel = viewModel()
+    val gameViewModel: GameViewModel = viewModel()
 
     val configuration = LocalConfiguration.current
     val screenViewModel: ScreenViewModel = viewModel()
@@ -112,6 +114,7 @@ fun VamsemrNavHost(
                 playerViewModel = playerViewModel,
                 mazeInfoViewModel = mazeInfoViewModel,
                 navController = navController,
+                gameViewModel = gameViewModel,
                 screenViewModel = screenViewModel
             )
         }

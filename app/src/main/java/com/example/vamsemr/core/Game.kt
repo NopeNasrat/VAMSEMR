@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import com.example.vamsemr.Navigation.ConfirmExitOnBackHandler
 import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.R
+import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.MazeInfo
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.Player
@@ -38,6 +39,7 @@ fun Game(
     screenViewModel: ScreenViewModel,
     modifier: Modifier = Modifier,
     mazeInfoViewModel: MazeInfoViewModel,
+    gameViewModel: GameViewModel,
     navController: NavHostController
 ) {
     val player by playerViewModel.player

@@ -21,7 +21,11 @@ class GameViewModel : ViewModel() {
     }
 
 
-    fun updateMazeInfo() {
+    fun updateMaze(newMaze: Maze) {
+        _Maze.value = newMaze
+    }
+
+    fun resetMaze() {
         var newMaze: Maze
         do {
             newMaze = Maze(x, y)
