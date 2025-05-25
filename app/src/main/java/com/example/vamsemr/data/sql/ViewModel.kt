@@ -25,6 +25,11 @@ class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
         return itemsRepository.getItemStream(id)
     }
 
+    fun updateItem(updatedItem: Item) {
+        viewModelScope.launch {
+            itemsRepository.updateItem(updatedItem)
+        }
+    }
 
 
     fun getAllItems() = itemsRepository.getAllItemsStream()

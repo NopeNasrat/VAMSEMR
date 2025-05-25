@@ -77,10 +77,20 @@ fun findFinish (
             )
         )
 
-        return finishX != -1 || finishY != -1
+        return finishX != -1 && finishY != -1
     }
 }
 
+
+fun setSkore(skore: Int,
+             mazeInfoViewModel: MazeInfoViewModel
+){
+    mazeInfoViewModel.updateMazeSkore(
+        mazeInfoViewModel.MazeInfo.value.copy(
+            skorenow = skore,
+        )
+    )
+}
 
 fun findPlayer (
     gameViewModel: GameViewModel,
@@ -119,7 +129,6 @@ fun findPlayer (
     }
 }
 
-
 fun movePlayer(
     gameViewModel: GameViewModel,
     mazeInfoViewModel: MazeInfoViewModel,
@@ -132,6 +141,7 @@ fun movePlayer(
     var playerX = mazeInfoViewModel.MazeInfo.value.playerX
     var playerY = mazeInfoViewModel.MazeInfo.value.playerY
 
+    //println("$playerX $playerY")
 
 
     val canMove = when(smer) {
@@ -158,9 +168,26 @@ fun movePlayer(
             playerY = playerY
         )
     )
+    mazeInfoViewModel.updateMazeSkore(
+        mazeInfoViewModel.MazeInfo.value.copy(
+            skorenow = mazeInfoViewModel.MazeInfo.value.skorenow-1
+        )
+    )
 
-    gameViewModel.updateMaze(maze)
+    //gameViewModel.updateMaze(maze)
+
+    val newMazeGrid = maze.maze.map { row ->
+        row.map { cell -> cell.copy() }.toTypedArray()
+    }.toTypedArray()
+
+    val newMaze = Maze(
+        maze = newMazeGrid,
+        width = maze.width,
+        height = maze.height
+    )
+    gameViewModel.updateMaze(newMaze)
 }
+
 
 
 fun randomFinish(maze: Maze) {

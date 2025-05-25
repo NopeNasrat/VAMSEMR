@@ -9,6 +9,7 @@ import com.example.vamsemr.core.floodMaze
 import com.example.vamsemr.core.generateMaze
 import com.example.vamsemr.core.generatePlayer
 import com.example.vamsemr.core.randomFinish
+import com.example.vamsemr.core.setSkore
 import com.example.vamsemr.core.verifyMaze
 
 class GameViewModel : ViewModel() {
@@ -40,6 +41,7 @@ class GameViewModel : ViewModel() {
             randomFinish(newMaze)
             floodMaze(newMaze)
             generatePlayer(newMaze)
+            setSkore(x*y,mazeInfoViewModel)
         } while (!verifyMaze(newMaze))
 
         _Maze.value = newMaze

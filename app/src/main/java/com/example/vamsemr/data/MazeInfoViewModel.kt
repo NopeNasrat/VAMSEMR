@@ -30,4 +30,24 @@ class MazeInfoViewModel : ViewModel() {
             playerY = newMazeInfo.playerY
         )
     }
+
+    fun updateMazeSkore(newMazeInfo: MazeInfo) {
+        _MazeInfo.value = _MazeInfo.value.copy(
+            skorenow = newMazeInfo.skorenow,
+        )
+    }
+
+    fun updateMazeWrite(newMazeInfo: MazeInfo) {
+        _MazeInfo.value = _MazeInfo.value.copy(
+            zapisane = newMazeInfo.zapisane,
+        )
+    }
+
+    fun setZapisane(zapisane: Boolean) {
+        _MazeInfo.value = _MazeInfo.value.copy(
+            zapisane = zapisane
+        )
+    }
+
+
 }

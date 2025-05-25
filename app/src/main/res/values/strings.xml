@@ -31,7 +31,8 @@
 
     <string name="selectmazesizetext">Zadaná veľkosť bludiska:</string>
 
-
+    <string name="realExitToMenu">Naozaj sa chcete vrátiť do menu?</string>
+    <string name="exitToMenu">Návrat do menu</string>
 
     <string name="realexitapp">Naozaj chceš aplikáciu ukončiť?</string>
     <string name="exitapp">Ukončiť aplikáciu?</string>
@@ -44,6 +45,11 @@
 
     <string name="playerPic">P</string>
     <string name="finishPic">F</string>
+
+    <string name="endwin">Vyhral si!</string>
+    <string name="endwcelkoveskore">Celkove skóre: %d + %d</string>
+    <string name="endlose">Prehral si!</string>
+    <string name="endnewgame">Nová Hra!</string>
 
     //error
 

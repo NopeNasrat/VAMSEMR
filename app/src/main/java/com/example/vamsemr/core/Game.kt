@@ -53,6 +53,17 @@ import androidx.compose.ui.text.drawText
 import kotlin.math.min
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewModelScope
+import com.example.inventory.data.Item
+import com.example.inventory.ui.ItemViewModel
+import com.example.vamsemr.Navigation.Screen
 
 
 object GameScreen : NavigationDestination {
@@ -63,6 +74,7 @@ object GameScreen : NavigationDestination {
 
 @Composable
 fun Game(
+    viewModel: ItemViewModel,
     playerViewModel: PlayerViewModel,
     screenViewModel: ScreenViewModel,
     modifier: Modifier = Modifier,
@@ -73,6 +85,9 @@ fun Game(
     val player by playerViewModel.player
     val mazeInfo by mazeInfoViewModel.MazeInfo
     val maze by gameViewModel.Maze
+
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
@@ -85,7 +100,7 @@ fun Game(
         }
     }
 
-    val win = winCheck(
+    var win = winCheck(
         gameViewModel = gameViewModel,
         mazeInfoViewModel = mazeInfoViewModel
     )
@@ -98,12 +113,22 @@ fun Game(
     ) {
 
         //PlayerInfoSection(player = player,mazeInfo = mazeInfo, modifier = Modifier.padding(top = 35.dp))
-        Spacer(modifier = Modifier.height(16.dp).background(Color.Yellow))
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        Text(
+            text = stringResource(R.string.skore_label, mazeInfoViewModel.MazeInfo.value.skorenow),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
 
         MazeCanvas(
             maze = maze,
             modifier = Modifier
-                .padding(top = 24.dp)
+                .padding(top = 10.dp)
                 //.background(Color.Magenta)
                 .align(Alignment.CenterHorizontally),
             mazeInfoViewModel = mazeInfoViewModel
@@ -114,36 +139,159 @@ fun Game(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ActionButtonsRow(
-            onFirstClick = { /* akcia 1 */ },
-            onSecondClick = { /* akcia 2 */ }
+        ButtonsRowGame(
+            onBackClick = { /* sem napíš logiku pre hint */ },
+            onNextClick = { showConfirmDialog = true }
         )
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        ArrowPad()
+        ArrowPad(
+            onUp = {
+                movePlayer(
+                    gameViewModel = gameViewModel,
+                    mazeInfoViewModel = mazeInfoViewModel,
+                    smer = Smer.UP
+                )
+                //println("testup")
+            },
+            onDown = {
+                movePlayer(
+                    gameViewModel = gameViewModel,
+                    mazeInfoViewModel = mazeInfoViewModel,
+                    smer = Smer.DOWN
+                )
+            },
+            onLeft = {
+                movePlayer(
+                    gameViewModel = gameViewModel,
+                    mazeInfoViewModel = mazeInfoViewModel,
+                    smer = Smer.LEFT
+                )
+            },
+            onRight = {
+                movePlayer(
+                    gameViewModel = gameViewModel,
+                    mazeInfoViewModel = mazeInfoViewModel,
+                    smer = Smer.RIGHT
+                )
+            }
+        )
+
 
 
     }
+
+
+
+
+
+    if (showConfirmDialog) {
+        ConfirmReturnToMenuDialog(
+            onConfirm = {
+                showConfirmDialog = false
+                screenViewModel.setStage(1)
+                navController.navigate(Screen.HOME.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            },
+            onDismiss = {
+                showConfirmDialog = false
+            }
+        )
+    }
+
+    if (win || mazeInfoViewModel.MazeInfo.value.skorenow < 0) {
+        val (stage, scoreToDisplay) = if (win) {
+            R.string.endwin to mazeInfoViewModel.MazeInfo.value.skorenow
+        } else {
+            R.string.endlose to -500
+        }
+
+
+        if (!mazeInfo.zapisane) {
+            val updatedPlayer = player.copy(
+                games = player.games + 1,
+                skore = player.skore + scoreToDisplay
+            )
+            playerViewModel.updatePlayer(updatedPlayer)
+            val updatedItem = Item(
+                id = updatedPlayer.id,
+                name = updatedPlayer.name,
+                skore = updatedPlayer.skore,
+                games = updatedPlayer.games
+            )
+            viewModel.updateItem(updatedItem)
+            mazeInfoViewModel.setZapisane(true)
+        }
+
+        GameResultDialog(
+            playerViewModel = playerViewModel,
+            resultTextRes = stage,
+            scorenow = scoreToDisplay,
+            onDismiss = { gameViewModel.resetMaze(mazeInfoViewModel)
+                        mazeInfoViewModel.setZapisane(false)
+                        }
+        )
+    }
+
+
 }
+
 
 @Composable
-fun ActionButtonsRow(
-    onFirstClick: () -> Unit = {},
-    onSecondClick: () -> Unit = {}
+fun GameResultDialog(
+    playerViewModel: PlayerViewModel,
+    resultTextRes: Int,
+    scorenow: Int,
+    onDismiss: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Button(onClick = onFirstClick) {
-            Text(stringResource(R.string.hint))
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(resultTextRes))
+        },
+        text = {
+            Column {
+                Text(text = stringResource(R.string.skore_label, scorenow))
+                Text(text = stringResource(R.string.endwcelkoveskore, playerViewModel.player.value.skore - scorenow, scorenow))
+                Text(text = stringResource(R.string.games_label, playerViewModel.player.value.games))
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = stringResource(R.string.endnewgame))
+            }
         }
-        Button(onClick = onSecondClick) {
-            Text(stringResource(R.string.menu))
-        }
-    }
+    )
 }
+
+
+@Composable
+fun ConfirmReturnToMenuDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.exitToMenu)) },
+        text = { Text(text = stringResource(R.string.realExitToMenu)) },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = stringResource(R.string.yes))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.no))
+            }
+        }
+    )
+}
+
 
 @Composable
 fun ArrowPad(
@@ -211,21 +359,24 @@ fun ArrowPad(
 
 
 @Composable
-fun Button(
-    onClick: () -> Unit,
+fun ButtonsRowGame(
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    content: @Composable RowScope.() -> Unit  // <-- tu je receiver RowScope
+    onBackClick: () -> Unit,
+    onNextClick: () -> Unit
 ) {
-    androidx.compose.material3.Button(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-        content = {
-            // Tu môžeme volať content s RowScope receiverom
-            this.content()
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Button(onClick = onBackClick,modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.hint))
         }
-    )
+        Button(onClick = onNextClick,modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.menu))
+        }
+    }
 }
 
 

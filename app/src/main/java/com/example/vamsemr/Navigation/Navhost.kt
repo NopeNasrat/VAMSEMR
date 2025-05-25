@@ -110,6 +110,7 @@ fun VamsemrNavHost(
 
         composable(route = Screen.GAME.route) {
             Game(
+                viewModel = viewModel,
                 modifier = modifier,
                 playerViewModel = playerViewModel,
                 mazeInfoViewModel = mazeInfoViewModel,
