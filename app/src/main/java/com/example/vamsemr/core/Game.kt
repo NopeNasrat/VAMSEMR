@@ -1,6 +1,7 @@
 package com.example.vamsemr.core
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,12 +21,38 @@ import com.example.vamsemr.Navigation.ConfirmExitOnBackHandler
 import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.R
 import com.example.vamsemr.data.GameViewModel
+import com.example.vamsemr.data.Maze
 import com.example.vamsemr.data.MazeInfo
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.Player
 import com.example.vamsemr.data.PlayerViewModel
 import com.example.vamsemr.data.ScreenViewModel
 import com.example.vamsemr.ui.PlayerInfoSection
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.text.drawText
+import kotlin.math.min
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 
 
 object GameScreen : NavigationDestination {
@@ -58,7 +85,10 @@ fun Game(
         }
     }
 
-
+    val win = winCheck(
+        gameViewModel = gameViewModel,
+        mazeInfoViewModel = mazeInfoViewModel
+    )
 
 
     Column(
@@ -68,14 +98,227 @@ fun Game(
     ) {
 
         //PlayerInfoSection(player = player,mazeInfo = mazeInfo, modifier = Modifier.padding(top = 35.dp))
+        Spacer(modifier = Modifier.height(16.dp).background(Color.Yellow))
+
+        MazeCanvas(
+            maze = maze,
+            modifier = Modifier
+                .padding(top = 24.dp)
+                //.background(Color.Magenta)
+                .align(Alignment.CenterHorizontally),
+            mazeInfoViewModel = mazeInfoViewModel
+        )
 
 
 
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ActionButtonsRow(
+            onFirstClick = { /* akcia 1 */ },
+            onSecondClick = { /* akcia 2 */ }
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        ArrowPad()
 
 
     }
 }
 
+@Composable
+fun ActionButtonsRow(
+    onFirstClick: () -> Unit = {},
+    onSecondClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(onClick = onFirstClick) {
+            Text(stringResource(R.string.hint))
+        }
+        Button(onClick = onSecondClick) {
+            Text(stringResource(R.string.menu))
+        }
+    }
+}
+
+@Composable
+fun ArrowPad(
+    onUp: () -> Unit = {},
+    onDown: () -> Unit = {},
+    onLeft: () -> Unit = {},
+    onRight: () -> Unit = {}
+) {
+    val arrowButtonSize = 64.dp
+    val iconSize = 32.dp
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Spacer(modifier = Modifier.size(arrowButtonSize))
+            IconButton(
+                onClick = onUp,
+                modifier = Modifier
+                    .size(arrowButtonSize)
+                    .background(Color.LightGray, shape = CircleShape)
+            ) {
+                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Up", modifier = Modifier.size(iconSize))
+            }
+            Spacer(modifier = Modifier.size(arrowButtonSize))
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            IconButton(
+                onClick = onLeft,
+                modifier = Modifier
+                    .size(arrowButtonSize)
+                    .background(Color.LightGray, shape = CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Left", modifier = Modifier.size(iconSize))
+            }
+
+            Spacer(modifier = Modifier.size(arrowButtonSize))
+
+            IconButton(
+                onClick = onRight,
+                modifier = Modifier
+                    .size(arrowButtonSize)
+                    .background(Color.LightGray, shape = CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Right", modifier = Modifier.size(iconSize))
+            }
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Spacer(modifier = Modifier.size(arrowButtonSize))
+            IconButton(
+                onClick = onDown,
+                modifier = Modifier
+                    .size(arrowButtonSize)
+                    .background(Color.LightGray, shape = CircleShape)
+            ) {
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Down", modifier = Modifier.size(iconSize))
+            }
+            Spacer(modifier = Modifier.size(arrowButtonSize))
+        }
+    }
+}
+
+
+@Composable
+fun Button(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit  // <-- tu je receiver RowScope
+) {
+    androidx.compose.material3.Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        content = {
+            // Tu môžeme volať content s RowScope receiverom
+            this.content()
+        }
+    )
+}
+
+
+@Composable
+fun MazeCanvas(
+    maze: Maze,
+    mazeInfoViewModel: MazeInfoViewModel,
+    modifier: Modifier = Modifier
+) {
+    val cellCountX = maze.height
+    val cellCountY = maze.width
+    val maxCells = maxOf(cellCountX, cellCountY)
+
+    val finishText = stringResource(R.string.finishPic)
+    val playerText = stringResource(R.string.playerPic)
+
+    BoxWithConstraints(
+        modifier = modifier
+            .aspectRatio(1f) // štvorcový tvar
+            .padding(16.dp)
+    ) {
+        val canvasSize = maxWidth.coerceAtMost(maxHeight)
+        val cellSize = canvasSize / maxCells
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val cellSizePx = cellSize.toPx()
+            val nativeCanvas = drawContext.canvas.nativeCanvas
+            val wallWidth = cellSizePx * 0.1f
+
+            fun drawCenteredText(text: String, centerX: Float, centerY: Float, textSize: Float) {
+                val paint = android.graphics.Paint().apply {
+                    color = android.graphics.Color.BLACK
+                    this.textSize = textSize
+                    textAlign = android.graphics.Paint.Align.CENTER
+                    isFakeBoldText = true
+                }
+                val textY = centerY - (paint.descent() + paint.ascent()) / 2
+                nativeCanvas.drawText(text, centerX, textY, paint)
+            }
+
+            fun drawFinishCell(x: Int, y: Int) {
+                val centerX = x * cellSizePx + cellSizePx / 2
+                val centerY = y * cellSizePx + cellSizePx / 2
+                val radius = cellSizePx * 0.4f
+
+                drawCircle(Color.Yellow, radius, Offset(centerX, centerY))
+                drawCenteredText(finishText, centerX, centerY, radius * 1.2f)
+            }
+
+            fun drawPlayerCell(x: Int, y: Int) {
+                val centerX = x * cellSizePx + cellSizePx / 2
+                val centerY = y * cellSizePx + cellSizePx / 2
+                val radius = cellSizePx * 0.4f
+
+                drawCircle(Color.Blue, radius, Offset(centerX, centerY))
+                drawCenteredText(playerText, centerX, centerY, radius * 1.2f)
+            }
+
+            for (y in 0 until cellCountY) {
+                for (x in 0 until cellCountX) {
+                    val cell = maze.maze[y][x]
+
+                    drawRect(
+                        Color.Gray,
+                        topLeft = Offset(x * cellSizePx, y * cellSizePx),
+                        size = Size(cellSizePx, cellSizePx)
+                    )
+
+                    if (cell.right && x != cellCountX - 1) {
+                        drawRect(
+                            Color.Blue,
+                            topLeft = Offset((x + 1) * cellSizePx - wallWidth / 2f, y * cellSizePx),
+                            size = Size(wallWidth, cellSizePx)
+                        )
+                    }
+
+                    if (cell.bottom && y != cellCountY - 1) {
+                        drawRect(
+                            Color.Blue,
+                            topLeft = Offset(x * cellSizePx, (y + 1) * cellSizePx - wallWidth / 2f),
+                            size = Size(cellSizePx, wallWidth)
+                        )
+                    }
+
+                    when {
+                        cell.finish -> drawFinishCell(x, y)
+                        cell.player -> drawPlayerCell(x, y)
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 @Composable

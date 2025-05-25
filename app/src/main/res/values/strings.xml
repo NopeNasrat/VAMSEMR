@@ -38,6 +38,13 @@
     <string name="yes">Áno</string>
     <string name="no">Nie</string>
 
+
+    <string name="hint">Nápoveda</string>
+    <string name="menu">Menu</string>
+
+    <string name="playerPic">P</string>
+    <string name="finishPic">F</string>
+
     //error
 
     <string name="error_id">Zadané ID nie je číslo</string>
