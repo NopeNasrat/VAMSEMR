@@ -3,6 +3,9 @@ package com.example.vamsemr.data
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.vamsemr.core.compressMaze
+import com.example.vamsemr.core.decompressMaze
 import com.example.vamsemr.core.findFinish
 import com.example.vamsemr.core.findPlayer
 import com.example.vamsemr.core.floodMaze
@@ -11,6 +14,8 @@ import com.example.vamsemr.core.generatePlayer
 import com.example.vamsemr.core.randomFinish
 import com.example.vamsemr.core.setSkore
 import com.example.vamsemr.core.verifyMaze
+import com.example.vamsemr.data.sql.MazeViewModel
+import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
     private var x: Int = 2
@@ -49,5 +54,32 @@ class GameViewModel : ViewModel() {
         findPlayer(this, mazeInfoViewModel)
     }
 
+    fun saveMaze(gameViewModel: GameViewModel,
+                 mazeInfoViewModel: MazeInfoViewModel,
+                 playerViewModel: PlayerViewModel,
+                 mazeviewModel: MazeViewModel
+    ){
+        compressMaze(gameViewModel = gameViewModel,
+            mazeInfoViewModel = mazeInfoViewModel,
+            mazeviewModel = mazeviewModel,
+            playerViewModel = playerViewModel)
+    }
+
+
+    fun loadMaze(
+        gameViewModel: GameViewModel,
+        mazeInfoViewModel: MazeInfoViewModel,
+        mazeViewModel: MazeViewModel,
+        playerViewModel: PlayerViewModel
+    ) {
+        viewModelScope.launch {
+            decompressMaze(
+                gameViewModel = gameViewModel,
+                mazeInfoViewModel = mazeInfoViewModel,
+                mazeviewModel = mazeViewModel,
+                playerViewModel = playerViewModel
+            )
+        }
+    }
 }
 

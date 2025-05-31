@@ -1,11 +1,14 @@
 package com.example.vamsemr.core
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.data.compMazes
 import com.example.vamsemr.data.Cell
 import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.Maze
+import com.example.vamsemr.data.MazeInfo
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.PlayerViewModel
 import com.example.vamsemr.data.sql.MazeViewModel
@@ -34,7 +37,7 @@ fun compressMaze(gameViewModel: GameViewModel,
     val maze = gameViewModel.Maze.value
     val mazeString = mazeToString(maze)
     val comprimMazeString = binaryStringToCompressedString(mazeString)
-
+    Log.d("mazechcekbinary",mazeString)
     val datamaze = compMazes(id = playerViewModel.player.value.id,
         width = maze.width,
         height = maze.height,
@@ -62,6 +65,15 @@ fun binaryStringToCompressedString(binaryString: String): String {
     }
     return sb.toString()
 }
+fun compressedStringToBinaryString(compressed: String): String {
+    val sb = StringBuilder()
+    for (char in compressed) {
+        val byteValue = char.code // .code je Int reprezentácia znaku
+        val binaryString = byteValue.toString(2).padStart(8, '0')
+        sb.append(binaryString)
+    }
+    return sb.toString()
+}
 
 fun mazeToString(maze: Maze): String {
     val sb = StringBuilder()
@@ -81,17 +93,66 @@ fun cellToString(cell: Cell): String {
         append(if (cell.right) '1' else '0')
     }
 }
+fun stringToMaze(binary: String, cmaze: compMazes): Maze {
+    val maze = Maze(cmaze.height,cmaze.width)
+    var index = 0
+    for (y in 0 until maze.height) {
+        for (x in 0 until maze.width) {
+            if (index + 4 > binary.length) throw IllegalArgumentException("Invalid binary string length")
+
+            val top = binary[index] == '1'
+            val bottom = binary[index + 1] == '1'
+            val left = binary[index + 2] == '1'
+            val right = binary[index + 3] == '1'
+            maze.maze[y][x] = Cell(top = top,
+                                    bottom = bottom,
+                                    left = left,
+                                    right = right)
+
+            index += 4
+        }
+    }
+    return maze
+}
 
 
-fun decompressMaze(gameViewModel: GameViewModel,
-                 mazeInfoViewModel: MazeInfoViewModel,
-                 playerViewModel: PlayerViewModel,
-                 mazeviewModel: MazeViewModel
+
+
+suspend fun decompressMaze(gameViewModel: GameViewModel,
+                   mazeInfoViewModel: MazeInfoViewModel,
+                   playerViewModel: PlayerViewModel,
+                   mazeviewModel: MazeViewModel
 ): Boolean {
+    val maze = mazeviewModel.getMazeById(playerViewModel.player.value.id)
+    if (maze == null) return false
 
+    //Log.d("TAG","loaded save?")
 
+    val binary = compressedStringToBinaryString(maze.maze)
+    val realmaze = stringToMaze(binary,maze)
 
+    Log.d("mazechcekbinary",binary)
 
+    realmaze.maze[maze.playerY][maze.playerX].player = true
+    realmaze.maze[maze.finishY][maze.finishX].finish = true
+    floodMaze(realmaze)
+    if (!verifyMaze(realmaze)) return false
+
+    gameViewModel.updateMaze(realmaze)
+    mazeInfoViewModel.updateALLMazeInfo(
+        MazeInfo(x =gameViewModel.Maze.value.width,
+            y = gameViewModel.Maze.value.height,
+            finishX = maze.finishX,
+            finishY = maze.finishY,
+            playerY = maze.playerY,
+            playerX = maze.playerX,
+            skorenow = maze.skoregame
+        ))
+    playerViewModel.updatePlayer(playerViewModel.player.value.copy(skore = maze.skore))
+    findPlayer(gameViewModel,mazeInfoViewModel)
+    findFinish(gameViewModel,mazeInfoViewModel)
+    forceUpdateMaze(gameViewModel)
+    return true
 }
 
 

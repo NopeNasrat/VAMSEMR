@@ -8,6 +8,7 @@ import com.example.inventory.data.MazesRepository
 import com.example.inventory.data.compMazes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class MazeViewModel(private val mazesRepository: MazesRepository) : ViewModel() {
@@ -28,10 +29,15 @@ class MazeViewModel(private val mazesRepository: MazesRepository) : ViewModel() 
             }
         }
     }
-
+/*
     fun getMazeById(id: Int): Flow<compMazes?> {
         return mazesRepository.getMazeStream(id)
     }
+*/
+    suspend fun getMazeById(id: Int): compMazes? {
+        return mazesRepository.getMazeStream(id).firstOrNull()
+    }
+
 
     fun updateMaze(maze: compMazes) {
         viewModelScope.launch {

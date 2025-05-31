@@ -142,12 +142,7 @@ fun Game(
         Spacer(modifier = Modifier.height(16.dp))
 
         ButtonsRowGame(
-            onBackClick = { showConfirmDialogHint = true
-                compressMaze(gameViewModel = gameViewModel,
-                    mazeInfoViewModel = mazeInfoViewModel,
-                    mazeviewModel = mazeviewModel,
-                    playerViewModel = playerViewModel)
-                          },
+            onBackClick = { showConfirmDialogHint = true},
             onNextClick = { showConfirmDialog = true }
         )
 
@@ -197,6 +192,10 @@ fun Game(
         ConfirmHintDialog(
             onConfirm = {
                 showConfirmDialogHint = false
+
+
+                gameViewModel.loadMaze(gameViewModel,mazeInfoViewModel,mazeviewModel,playerViewModel)
+                //gameViewModel.saveMaze(gameViewModel,mazeInfoViewModel,playerViewModel,mazeviewModel)
 
                 val currentScore = mazeInfoViewModel.MazeInfo.value.skorenow
                 val newScore = currentScore - hintcost

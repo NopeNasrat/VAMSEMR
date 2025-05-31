@@ -10,6 +10,20 @@ class MazeInfoViewModel : ViewModel() {
     val MazeInfo: State<MazeInfo> get() = _MazeInfo
 
 
+    fun updateALLMazeInfo(newMazeInfo: MazeInfo) {
+        _MazeInfo.value = newMazeInfo
+        /*
+            _MazeInfo.value.copy(
+            x = newMazeInfo.x,
+            y = newMazeInfo.y,
+            playerX = newMazeInfo.playerX,
+            playerY = newMazeInfo.playerY,
+            finishX = newMazeInfo.finishX,
+            finishY = newMazeInfo.finishY,
+            skorenow = newMazeInfo.skorenow
+        )*/
+    }
+
     fun updateMazeInfo(newMazeInfo: MazeInfo) {
         _MazeInfo.value = _MazeInfo.value.copy(
             x = newMazeInfo.x,
