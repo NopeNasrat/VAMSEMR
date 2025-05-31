@@ -18,7 +18,8 @@ package com.example.inventory.data
 
 import kotlinx.coroutines.flow.Flow
 
-class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
+class OfflineItemsRepository(private val itemDao: ItemDao
+    ) : ItemsRepository {
     override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
 
    // override fun getItemStream(id: Int): Flow<Item?> = itemDao.getItem(id)
@@ -31,4 +32,13 @@ class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
     override suspend fun updateItem(item: Item) = itemDao.update(item)
 
     override suspend fun getAllIds(): List<Int> = itemDao.getAllIds()
+}
+
+class OfflineMazesRepository(private val mazeDao: MazeDao) : MazesRepository {
+    override fun getAllMazesStream(): Flow<List<compMazes>> = mazeDao.getAllMazes()
+    override fun getMazeStream(id: Int): Flow<compMazes?> = mazeDao.getMaze(id)
+    override suspend fun insertMaze(maze: compMazes) = mazeDao.insert(maze)
+    override suspend fun updateMaze(maze: compMazes) = mazeDao.update(maze)
+    override suspend fun deleteMaze(maze: compMazes) = mazeDao.delete(maze)
+    override suspend fun getAllMazeIds(): List<Int> = mazeDao.getAllMazeIds()
 }

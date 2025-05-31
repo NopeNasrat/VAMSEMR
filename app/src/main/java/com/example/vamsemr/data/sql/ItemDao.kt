@@ -30,3 +30,24 @@ interface ItemDao {
     suspend fun getAllIds(): List<Int>
 
 }
+
+@Dao
+interface MazeDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(maze: compMazes)
+
+    @Update
+    suspend fun update(maze: compMazes)
+
+    @Delete
+    suspend fun delete(maze: compMazes)
+
+    @Query("SELECT * FROM mazes WHERE id = :id")
+    fun getMaze(id: Int): Flow<compMazes?>
+
+    @Query("SELECT * FROM mazes ORDER BY id ASC")
+    fun getAllMazes(): Flow<List<compMazes>>
+
+    @Query("SELECT id FROM mazes ORDER BY id ASC")
+    suspend fun getAllMazeIds(): List<Int>
+}

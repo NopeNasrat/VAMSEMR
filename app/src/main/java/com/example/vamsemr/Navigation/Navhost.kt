@@ -13,10 +13,12 @@ import androidx.navigation.compose.composable
 import androidx.compose.runtime.getValue
 import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.core.Game
+import com.example.vamsemr.core.GameHorz
 import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.PlayerViewModel
 import com.example.vamsemr.data.ScreenViewModel
+import com.example.vamsemr.data.sql.MazeViewModel
 import com.example.vamsemr.ui.HomeDestination
 import com.example.vamsemr.ui.HomeDestinationvert2
 import com.example.vamsemr.ui.MainScreenV1
@@ -27,6 +29,7 @@ import com.example.vamsemr.ui.StartScreenVert2
 fun VamsemrNavHost(
     navController: NavHostController,
     viewModel: ItemViewModel,
+    mazeviewModel: MazeViewModel,
     modifier: Modifier = Modifier
 ) {
 
@@ -59,14 +62,23 @@ fun VamsemrNavHost(
             }
 
             2 -> {
-                if (currentRoute != Screen.GAME.route) {
+                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                    currentRoute != Screen.GAME.route) {
                     navController.navigate(Screen.GAME.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                    currentRoute != Screen.GAMEHORZ.route) {
+                    navController.navigate(Screen.GAMEHORZ.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
             }
 
-            // Pridaj ďalšie stavy podľa potreby
+
+
+
+
         }
     }
 
@@ -116,9 +128,22 @@ fun VamsemrNavHost(
                 mazeInfoViewModel = mazeInfoViewModel,
                 navController = navController,
                 gameViewModel = gameViewModel,
+                mazeviewModel = mazeviewModel,
                 screenViewModel = screenViewModel
             )
         }
-        // composable(OtherDestination.route) { ... }
+
+        composable(route = Screen.GAMEHORZ.route) {
+            GameHorz(
+                viewModel = viewModel,
+                modifier = modifier,
+                playerViewModel = playerViewModel,
+                mazeInfoViewModel = mazeInfoViewModel,
+                navController = navController,
+                gameViewModel = gameViewModel,
+                mazeviewModel = mazeviewModel,
+                screenViewModel = screenViewModel
+            )
+        }
     }
 }

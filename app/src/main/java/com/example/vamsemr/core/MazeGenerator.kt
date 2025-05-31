@@ -2,10 +2,13 @@ package com.example.vamsemr.core
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.inventory.data.compMazes
 import com.example.vamsemr.data.Cell
 import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.Maze
 import com.example.vamsemr.data.MazeInfoViewModel
+import com.example.vamsemr.data.PlayerViewModel
+import com.example.vamsemr.data.sql.MazeViewModel
 import kotlin.random.Random
 
 /*
@@ -19,12 +22,90 @@ fun resetMaze(gameViewModel: GameViewModel) {
     gameViewModel.resetMaze()
 }*/
 
+fun compressMaze(gameViewModel: GameViewModel,
+                 mazeInfoViewModel: MazeInfoViewModel,
+                 playerViewModel: PlayerViewModel,
+                 mazeviewModel: MazeViewModel
+): Boolean {
+    var success = findFinish(gameViewModel, mazeInfoViewModel)
+                && findPlayer(gameViewModel, mazeInfoViewModel)
+    if (!success) return false
+
+    val maze = gameViewModel.Maze.value
+    val mazeString = mazeToString(maze)
+    val comprimMazeString = binaryStringToCompressedString(mazeString)
+
+    val datamaze = compMazes(id = playerViewModel.player.value.id,
+        width = maze.width,
+        height = maze.height,
+        playerX = mazeInfoViewModel.MazeInfo.value.playerX,
+        playerY = mazeInfoViewModel.MazeInfo.value.playerY,
+        finishX = mazeInfoViewModel.MazeInfo.value.finishX,
+        finishY = mazeInfoViewModel.MazeInfo.value.finishY,
+        skore = playerViewModel.player.value.skore,
+        skoregame = mazeInfoViewModel.MazeInfo.value.skorenow,
+        maze = comprimMazeString
+        )
+
+    mazeviewModel.addOrUpdateMaze(datamaze)
+    return true
+}
+fun binaryStringToCompressedString(binaryString: String): String {
+    val paddedLength = ((binaryString.length + 7) / 8) * 8
+    val paddedString = binaryString.padEnd(paddedLength, '0')
+
+    val sb = StringBuilder()
+    for (i in 0 until paddedLength step 8) {
+        val byteString = paddedString.substring(i, i + 8)
+        val byteValue = byteString.toInt(2)
+        sb.append(byteValue.toChar())
+    }
+    return sb.toString()
+}
+
+fun mazeToString(maze: Maze): String {
+    val sb = StringBuilder()
+    for (y in 0 until maze.height) {
+        for (x in 0 until maze.width) {
+            val cell = maze.maze[y][x]
+            sb.append(cellToString(cell))
+        }
+    }
+    return sb.toString()
+}
+fun cellToString(cell: Cell): String {
+    return buildString {
+        append(if (cell.top) '1' else '0')
+        append(if (cell.bottom) '1' else '0')
+        append(if (cell.left) '1' else '0')
+        append(if (cell.right) '1' else '0')
+    }
+}
+
+
+fun decompressMaze(gameViewModel: GameViewModel,
+                 mazeInfoViewModel: MazeInfoViewModel,
+                 playerViewModel: PlayerViewModel,
+                 mazeviewModel: MazeViewModel
+): Boolean {
+
+
+
+
+}
+
+
 
 @Composable
 fun winCheck(
     gameViewModel: GameViewModel,
     mazeInfoViewModel: MazeInfoViewModel
 ): Boolean {
+    val aktualzacia = { findPlayer(gameViewModel = gameViewModel, mazeInfoViewModel = mazeInfoViewModel)
+            && findFinish(gameViewModel = gameViewModel, mazeInfoViewModel = mazeInfoViewModel)}
+
+    if (!aktualzacia()) return false
+
     val maze = gameViewModel.Maze.value
     val playerX = mazeInfoViewModel.MazeInfo.value.playerX
     val playerY = mazeInfoViewModel.MazeInfo.value.playerY
@@ -134,6 +215,7 @@ fun movePlayer(
     mazeInfoViewModel: MazeInfoViewModel,
     smer: Smer
 ) {
+    removeHint(gameViewModel = gameViewModel)
     val maze = gameViewModel.Maze.value
 
 
@@ -176,6 +258,22 @@ fun movePlayer(
 
     //gameViewModel.updateMaze(maze)
 
+    forceUpdateMaze(gameViewModel = gameViewModel,
+        maze = maze)
+    /*
+    val newMazeGrid = maze.maze.map { row ->
+        row.map { cell -> cell.copy() }.toTypedArray()
+    }.toTypedArray()
+
+    val newMaze = Maze(
+        maze = newMazeGrid,
+        width = maze.width,
+        height = maze.height
+    )
+    gameViewModel.updateMaze(newMaze)*/
+}
+
+fun forceUpdateMaze(gameViewModel: GameViewModel, maze: Maze = gameViewModel.Maze.value) {
     val newMazeGrid = maze.maze.map { row ->
         row.map { cell -> cell.copy() }.toTypedArray()
     }.toTypedArray()
@@ -187,7 +285,6 @@ fun movePlayer(
     )
     gameViewModel.updateMaze(newMaze)
 }
-
 
 
 fun randomFinish(maze: Maze) {
@@ -252,7 +349,69 @@ fun generatePlayer(maze: Maze) {
     maze.maze[playerY][playerX].player = true
 }
 
+fun removeHint(gameViewModel: GameViewModel) {
+    val maze = gameViewModel.Maze.value
+    for (y in 0 until maze.height) {
+        for (x in 0 until maze.width) {
+            maze.maze[y][x].hint = 0
+        }
+    }
+    gameViewModel.updateMaze(maze.copy())
+}
 
+
+fun hint(gameViewModel: GameViewModel,mazeInfoViewModel: MazeInfoViewModel,x: Int = -1,y: Int = -1, counter: Int = 0) {
+    var nextX = x
+    var nextY = y
+    if (x == -1 || y == -1) {
+        if (!findPlayer(gameViewModel = gameViewModel, mazeInfoViewModel = mazeInfoViewModel)) return
+        nextX = mazeInfoViewModel.MazeInfo.value.playerX
+        nextY = mazeInfoViewModel.MazeInfo.value.playerY
+    }
+    val maze = gameViewModel.Maze.value
+    maze.maze[nextY][nextX].hint = counter
+    val directions = listOf(
+        Triple(0, -1, "top"),
+        Triple(0, 1, "bottom"),
+        Triple(1, 0, "right"),
+        Triple(-1, 0, "left")
+    )
+
+    var bestX = nextX
+    var bestY = nextY
+    var minFlood = maze.maze[nextY][nextX].flood
+    for ((dx, dy, direction) in directions) {
+        val nx = nextX + dx
+        val ny = nextY + dy
+
+        if (ny in 0 until maze.height && nx in 0 until maze.width) {
+            val wallBlocked = when (direction) {
+                "top" -> maze.maze[nextY][nextX].top
+                "bottom" -> maze.maze[nextY][nextX].bottom
+                "right" -> maze.maze[nextY][nextX].right
+                "left" -> maze.maze[nextY][nextX].left
+                else -> true
+            }
+            if (wallBlocked) continue
+
+            val neighborFlood = maze.maze[ny][nx].flood
+            if (neighborFlood in 0 until minFlood) {
+                minFlood = neighborFlood
+                bestX = nx
+                bestY = ny
+            }
+        }
+    }
+    nextX = bestX
+    nextY = bestY
+    val counternext = counter - 1
+    //gameViewModel.updateMaze(maze.copy())
+    if (counternext > 0) {
+        hint(gameViewModel, mazeInfoViewModel, nextX, nextY, counternext)
+    } else {
+        gameViewModel.updateMaze(maze.copy())
+    }
+}
 
 fun floodMaze(maze: Maze) {
     var startX = -1
@@ -307,7 +466,8 @@ fun floodMaze(maze: Maze) {
 fun generateMaze(
     x: Int = 0,
     y: Int = 0,
-    maze: Maze
+    maze: Maze,
+    randwall: Int = 0
 ) {
     maze.maze[y][x].visited = true
     val directions = listOf("N", "S", "E", "W").shuffled()
@@ -340,7 +500,32 @@ fun generateMaze(
                     maze.maze[ny][nx].right = false
                 }
             }
-            generateMaze(nx, ny, maze)
+            generateMaze(nx, ny, maze, randwall)
+        } else if (ny in 0 until maze.height && nx in 0 until maze.width && maze.maze[ny][nx].visited) {
+            val randomNumber = (0..100).random()
+            if (randwall > randomNumber) {
+                when (direction) {
+                    "N" -> {
+                        maze.maze[y][x].top = false
+                        maze.maze[ny][nx].bottom = false
+                    }
+
+                    "S" -> {
+                        maze.maze[y][x].bottom = false
+                        maze.maze[ny][nx].top = false
+                    }
+
+                    "E" -> {
+                        maze.maze[y][x].right = false
+                        maze.maze[ny][nx].left = false
+                    }
+
+                    "W" -> {
+                        maze.maze[y][x].left = false
+                        maze.maze[ny][nx].right = false
+                    }
+                }
+            }
         }
     }
 }

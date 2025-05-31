@@ -8,7 +8,7 @@ data class Maze(
     val height: Int,
     val maze: Array<Array<Cell>>
 ) {
-    // sekundárny konštruktor
+    // sekundarny konstruktor
     constructor(width: Int, height: Int) : this(
         width,
         height,

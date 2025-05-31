@@ -37,7 +37,7 @@ class GameViewModel : ViewModel() {
         var newMaze: Maze
         do {
             newMaze = Maze(x, y)
-            generateMaze(0, 0, newMaze)
+            generateMaze(0, 0, newMaze, randwall = 5)
             randomFinish(newMaze)
             floodMaze(newMaze)
             generatePlayer(newMaze)

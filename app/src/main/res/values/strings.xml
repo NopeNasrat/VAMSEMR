@@ -51,6 +51,10 @@
     <string name="endlose">Prehral si!</string>
     <string name="endnewgame">Nová Hra!</string>
 
+
+    <string name="hintmenu">Nápoveda</string>
+    <string name="hintmenutext">Naozaj chces nápovedu %d políčok za %d bodov?</string>
+
     //error
 
     <string name="error_id">Zadané ID nie je číslo</string>

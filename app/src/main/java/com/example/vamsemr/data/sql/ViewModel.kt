@@ -31,7 +31,6 @@ class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
         }
     }
 
-
     fun getAllItems() = itemsRepository.getAllItemsStream()
 
     suspend fun getNextAvailableId(): Int {
@@ -42,10 +41,7 @@ class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
         return 1
     }
 
-
-
-
-    // Funkcia na odstránenie položky podľa ID
+    // Funkcia na odstranenie polozky podla ID
     fun deleteItemById(id: Int) {
         viewModelScope.launch {
             val itemToDelete = itemsRepository.getItemStream(id).first()  // Načítame položku podľa ID
@@ -55,7 +51,6 @@ class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
         }
     }
 }
-
 
 class ItemViewModelFactory(private val itemsRepository: ItemsRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {

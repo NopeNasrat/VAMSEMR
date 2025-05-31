@@ -49,3 +49,14 @@ interface ItemsRepository {
 
     suspend fun getAllIds(): List<Int>
 }
+
+
+
+interface MazesRepository {
+    fun getAllMazesStream(): Flow<List<compMazes>>
+    fun getMazeStream(id: Int): Flow<compMazes?>
+    suspend fun insertMaze(maze: compMazes)
+    suspend fun deleteMaze(maze: compMazes)
+    suspend fun updateMaze(maze: compMazes)
+    suspend fun getAllMazeIds(): List<Int>
+}

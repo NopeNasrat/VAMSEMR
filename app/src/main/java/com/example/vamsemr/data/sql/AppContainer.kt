@@ -23,16 +23,21 @@ import android.content.Context
  */
 interface AppContainer {
     val itemsRepository: ItemsRepository
+    val mazesRepository: MazesRepository
 }
 
 /**
  * [AppContainer] implementation that provides instance of [OfflineItemsRepository]
  */
 class AppDataContainer(private val context: Context) : AppContainer {
+    private val database = InventoryDatabase.getDatabase(context)
     /**
      * Implementation for [ItemsRepository]
      */
     override val itemsRepository: ItemsRepository by lazy {
-        OfflineItemsRepository(InventoryDatabase.getDatabase(context).itemDao())
+        OfflineItemsRepository(database.itemDao())
+    }
+    override val mazesRepository: MazesRepository by lazy {
+        OfflineMazesRepository(database.mazeDao())
     }
 }

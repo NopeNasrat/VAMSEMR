@@ -64,6 +64,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
 import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.Navigation.Screen
+import com.example.vamsemr.data.sql.MazeViewModel
 
 
 object GameScreen : NavigationDestination {
@@ -80,6 +81,7 @@ fun Game(
     modifier: Modifier = Modifier,
     mazeInfoViewModel: MazeInfoViewModel,
     gameViewModel: GameViewModel,
+    mazeviewModel: MazeViewModel,
     navController: NavHostController
 ) {
     val player by playerViewModel.player
@@ -87,7 +89,7 @@ fun Game(
     val maze by gameViewModel.Maze
 
     var showConfirmDialog by remember { mutableStateOf(false) }
-
+    var showConfirmDialogHint by remember { mutableStateOf(false) }
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
@@ -140,7 +142,12 @@ fun Game(
         Spacer(modifier = Modifier.height(16.dp))
 
         ButtonsRowGame(
-            onBackClick = { /* sem napíš logiku pre hint */ },
+            onBackClick = { showConfirmDialogHint = true
+                compressMaze(gameViewModel = gameViewModel,
+                    mazeInfoViewModel = mazeInfoViewModel,
+                    mazeviewModel = mazeviewModel,
+                    playerViewModel = playerViewModel)
+                          },
             onNextClick = { showConfirmDialog = true }
         )
 
@@ -184,7 +191,37 @@ fun Game(
 
 
 
+    if (showConfirmDialogHint) {
+        val hintTile = 5
+        val hintcost = (gameViewModel.Maze.value.width * gameViewModel.Maze.value.height) * 5 / 100
+        ConfirmHintDialog(
+            onConfirm = {
+                showConfirmDialogHint = false
 
+                val currentScore = mazeInfoViewModel.MazeInfo.value.skorenow
+                val newScore = currentScore - hintcost
+                mazeInfoViewModel.updateMazeSkore(
+                    mazeInfoViewModel.MazeInfo.value.copy(
+                        skorenow = newScore
+                    )
+                )
+
+                hint(gameViewModel = gameViewModel,
+                    mazeInfoViewModel = mazeInfoViewModel,
+                    counter = hintTile + 1)
+
+                forceUpdateMaze(gameViewModel = gameViewModel)
+
+                //gameViewModel.updateMaze(gameViewModel.Maze.value.copy())
+            },
+            onDismiss = {
+                showConfirmDialogHint = false
+            },
+            hintTile = hintTile,
+            hintCost = hintcost
+
+        )
+    }
 
     if (showConfirmDialog) {
         ConfirmReturnToMenuDialog(
@@ -236,6 +273,31 @@ fun Game(
     }
 
 
+}
+
+
+@Composable
+fun ConfirmHintDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    hintTile: Int,
+    hintCost: Int
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.hintmenu)) },
+        text = { Text(text = stringResource(R.string.hintmenutext,hintTile,hintCost)) },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = stringResource(R.string.yes))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.no))
+            }
+        }
+    )
 }
 
 
@@ -304,6 +366,7 @@ fun ArrowPad(
     val iconSize = 32.dp
 
     Column(
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -440,7 +503,7 @@ fun MazeCanvas(
                     val cell = maze.maze[y][x]
 
                     drawRect(
-                        Color.Gray,
+                        color = if (cell.hint > 0) Color.LightGray else Color.Gray,
                         topLeft = Offset(x * cellSizePx, y * cellSizePx),
                         size = Size(cellSizePx, cellSizePx)
                     )
