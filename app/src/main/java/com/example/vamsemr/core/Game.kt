@@ -88,8 +88,11 @@ fun Game(
     val mazeInfo by mazeInfoViewModel.MazeInfo
     val maze by gameViewModel.Maze
 
-    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showConfirmDialogExit by remember { mutableStateOf(false) }
+    var showConfirmDialogMenu by remember { mutableStateOf(false) }
     var showConfirmDialogHint by remember { mutableStateOf(false) }
+    var showConfirmDialogSave by remember { mutableStateOf(false) }
+    var showConfirmDialogLoad by remember { mutableStateOf(false) }
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
@@ -142,8 +145,8 @@ fun Game(
         Spacer(modifier = Modifier.height(16.dp))
 
         ButtonsRowGame(
-            onBackClick = { showConfirmDialogHint = true},
-            onNextClick = { showConfirmDialog = true }
+            onBackClick = { showConfirmDialogMenu = true},
+            onNextClick = { showConfirmDialogExit = true }
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -186,15 +189,51 @@ fun Game(
 
 
 
+
+    if (showConfirmDialogMenu) {
+        GameMenuDialog(
+            onDismiss = { showConfirmDialogMenu = false },
+            onSaveClick = { showConfirmDialogSave = true },
+            onLoadClick = { showConfirmDialogLoad = true },
+            onHintClick = { showConfirmDialogHint = true }
+        )
+    }
+
+    if (showConfirmDialogSave) {
+        ConfirmCustomDialog(
+            onConfirm = {showConfirmDialogSave = false
+                gameViewModel.saveMaze(gameViewModel,mazeInfoViewModel,playerViewModel,mazeviewModel)},
+            onDismiss = {showConfirmDialogSave = false},
+            title = stringResource(R.string.savemenu),
+            dialog = stringResource(R.string.savemenutext),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
+        )
+    }
+
+    if (showConfirmDialogLoad) {
+        ConfirmCustomDialog(
+            onConfirm = {showConfirmDialogLoad = false
+                gameViewModel.loadMaze(gameViewModel,mazeInfoViewModel,mazeviewModel,playerViewModel)},
+            onDismiss = {showConfirmDialogLoad = false},
+            title = stringResource(R.string.loadmenu),
+            dialog = stringResource(R.string.loadmenutext),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
+        )
+    }
+
+
+
     if (showConfirmDialogHint) {
         val hintTile = 5
         val hintcost = (gameViewModel.Maze.value.width * gameViewModel.Maze.value.height) * 5 / 100
-        ConfirmHintDialog(
+        ConfirmCustomDialog(
             onConfirm = {
                 showConfirmDialogHint = false
 
 
-                gameViewModel.loadMaze(gameViewModel,mazeInfoViewModel,mazeviewModel,playerViewModel)
+                //gameViewModel.loadMaze(gameViewModel,mazeInfoViewModel,mazeviewModel,playerViewModel)
                 //gameViewModel.saveMaze(gameViewModel,mazeInfoViewModel,playerViewModel,mazeviewModel)
 
                 val currentScore = mazeInfoViewModel.MazeInfo.value.skorenow
@@ -216,24 +255,44 @@ fun Game(
             onDismiss = {
                 showConfirmDialogHint = false
             },
-            hintTile = hintTile,
-            hintCost = hintcost
-
+            title = stringResource(R.string.hintmenu),
+            dialog = stringResource(R.string.hintmenutext,hintTile,hintcost),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
         )
     }
-
-    if (showConfirmDialog) {
+/*
+    if (showConfirmDialogExit) {
         ConfirmReturnToMenuDialog(
             onConfirm = {
-                showConfirmDialog = false
+                showConfirmDialogExit = false
                 screenViewModel.setStage(1)
                 navController.navigate(Screen.HOME.route) {
                     popUpTo(0) { inclusive = true }
                 }
             },
             onDismiss = {
-                showConfirmDialog = false
+                showConfirmDialogExit = false
             }
+        )
+    }*/
+
+    if (showConfirmDialogExit) {
+        ConfirmCustomDialog(
+            onConfirm = {
+                showConfirmDialogExit = false
+                screenViewModel.setStage(1)
+                navController.navigate(Screen.HOME.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            },
+            onDismiss = {
+                showConfirmDialogExit = false
+            },
+            title = stringResource(R.string.exitToMenu),
+            dialog = stringResource(R.string.realExitToMenu),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
         )
     }
 
@@ -274,7 +333,62 @@ fun Game(
 
 }
 
+@Composable
+fun GameMenuDialog(
+    onDismiss: () -> Unit,
+    onSaveClick: () -> Unit,
+    onLoadClick: () -> Unit,
+    onHintClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Game Menu") },
+        text = {
+            Column {
+                Button(
+                    onClick = {
+                        onSaveClick()
+                        onDismiss()
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Save")
+                }
 
+                Button(
+                    onClick = {
+                        onLoadClick()
+                        onDismiss()
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Load")
+                }
+
+                Button(
+                    onClick = {
+                        onHintClick()
+                        onDismiss()
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Hint")
+                }
+
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Close")
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {}
+    )
+}
+
+/*
 @Composable
 fun ConfirmHintDialog(
     onConfirm: () -> Unit,
@@ -294,6 +408,32 @@ fun ConfirmHintDialog(
         dismissButton = {
             OutlinedButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.no))
+            }
+        }
+    )
+}*/
+
+@Composable
+fun ConfirmCustomDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    title: String,
+    dialog: String,
+    confirm: String,
+    dismis: String
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = title) },
+        text = { Text(text = dialog) },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = confirm)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(text = dismis)
             }
         }
     )
@@ -330,7 +470,7 @@ fun GameResultDialog(
     )
 }
 
-
+/*
 @Composable
 fun ConfirmReturnToMenuDialog(
     onConfirm: () -> Unit,
@@ -351,7 +491,7 @@ fun ConfirmReturnToMenuDialog(
             }
         }
     )
-}
+}*/
 
 
 @Composable
@@ -433,7 +573,7 @@ fun ButtonsRowGame(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Button(onClick = onBackClick,modifier = Modifier.weight(1f)) {
-            Text(stringResource(R.string.hint))
+            Text(stringResource(R.string.gamemenu))
         }
         Button(onClick = onNextClick,modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.menu))

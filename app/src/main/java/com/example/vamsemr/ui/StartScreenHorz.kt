@@ -141,7 +141,7 @@ fun StartScreenHorz (
                             )
                         }
                         screenViewModel.setStage(2)
-                        navController.navigate(Screen.GAME.route) {
+                        navController.navigate(Screen.GAMEHORZ.route) {
                             popUpTo(0) { inclusive = true }
                             launchSingleTop = true
                         }

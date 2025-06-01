@@ -60,8 +60,11 @@ fun GameHorz(
     val mazeInfo by mazeInfoViewModel.MazeInfo
     val maze by gameViewModel.Maze
 
-    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showConfirmDialogExit by remember { mutableStateOf(false) }
+    var showConfirmDialogMenu by remember { mutableStateOf(false) }
     var showConfirmDialogHint by remember { mutableStateOf(false) }
+    var showConfirmDialogSave by remember { mutableStateOf(false) }
+    var showConfirmDialogLoad by remember { mutableStateOf(false) }
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
@@ -78,18 +81,9 @@ fun GameHorz(
         gameViewModel = gameViewModel,
         mazeInfoViewModel = mazeInfoViewModel
     )
-
-
     Row(
         modifier = modifier.fillMaxSize(),
-        //verticalArrangement = Arrangement.Top,
-        //horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        //PlayerInfoSection(player = player,mazeInfo = mazeInfo, modifier = Modifier.padding(top = 35.dp))
-
-
-
         MazeCanvas(
             maze = maze,
             modifier = Modifier
@@ -101,8 +95,8 @@ fun GameHorz(
 
         ButtonsCollumGame(
             //modifier = modifier,
-            onBackClick = { showConfirmDialogHint = true },
-            onNextClick = { showConfirmDialog = true }
+            onBackClick = { showConfirmDialogMenu = true },
+            onNextClick = { showConfirmDialogExit = true }
         )
 
 
@@ -165,13 +159,46 @@ fun GameHorz(
 
 
 
+
+    if (showConfirmDialogMenu) {
+        GameMenuDialog(
+            onDismiss = { showConfirmDialogMenu = false },
+            onSaveClick = { showConfirmDialogSave = true },
+            onLoadClick = { showConfirmDialogLoad = true },
+            onHintClick = { showConfirmDialogHint = true }
+        )
+    }
+
+    if (showConfirmDialogSave) {
+        ConfirmCustomDialog(
+            onConfirm = {showConfirmDialogSave = false
+                gameViewModel.saveMaze(gameViewModel,mazeInfoViewModel,playerViewModel,mazeviewModel)},
+            onDismiss = {showConfirmDialogSave = false},
+            title = stringResource(R.string.savemenu),
+            dialog = stringResource(R.string.savemenutext),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
+        )
+    }
+
+    if (showConfirmDialogLoad) {
+        ConfirmCustomDialog(
+            onConfirm = {showConfirmDialogLoad = false
+                gameViewModel.loadMaze(gameViewModel,mazeInfoViewModel,mazeviewModel,playerViewModel)},
+            onDismiss = {showConfirmDialogLoad = false},
+            title = stringResource(R.string.loadmenu),
+            dialog = stringResource(R.string.loadmenutext),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
+        )
+    }
+
     if (showConfirmDialogHint) {
         val hintTile = 5
         val hintcost = (gameViewModel.Maze.value.width * gameViewModel.Maze.value.height) * 5 / 100
-        ConfirmHintDialog(
+        ConfirmCustomDialog(
             onConfirm = {
                 showConfirmDialogHint = false
-
                 val currentScore = mazeInfoViewModel.MazeInfo.value.skorenow
                 val newScore = currentScore - hintcost
                 mazeInfoViewModel.updateMazeSkore(
@@ -179,36 +206,37 @@ fun GameHorz(
                         skorenow = newScore
                     )
                 )
-
                 hint(gameViewModel = gameViewModel,
                     mazeInfoViewModel = mazeInfoViewModel,
                     counter = hintTile + 1)
-
                 forceUpdateMaze(gameViewModel = gameViewModel)
-
-                //gameViewModel.updateMaze(gameViewModel.Maze.value.copy())
             },
             onDismiss = {
                 showConfirmDialogHint = false
             },
-            hintTile = hintTile,
-            hintCost = hintcost
-
+            title = stringResource(R.string.hintmenu),
+            dialog = stringResource(R.string.hintmenutext,hintTile,hintcost),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
         )
     }
 
-    if (showConfirmDialog) {
-        ConfirmReturnToMenuDialog(
+    if (showConfirmDialogExit) {
+        ConfirmCustomDialog(
             onConfirm = {
-                showConfirmDialog = false
+                showConfirmDialogExit = false
                 screenViewModel.setStage(1)
                 navController.navigate(Screen.HOME.route) {
                     popUpTo(0) { inclusive = true }
                 }
             },
             onDismiss = {
-                showConfirmDialog = false
-            }
+                showConfirmDialogExit = false
+            },
+            title = stringResource(R.string.exitToMenu),
+            dialog = stringResource(R.string.realExitToMenu),
+            confirm = stringResource(R.string.yes),
+            dismis = stringResource(R.string.no)
         )
     }
 
@@ -264,16 +292,21 @@ fun ButtonsCollumGame(
 
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
+        val buttonModifier = Modifier
+            .width(60.dp)
+            .height(130.dp)
+
         Button(onClick = onBackClick,
-            modifier = Modifier.width(60.dp)
+            modifier = buttonModifier
         ) {
-            Text(stringResource(R.string.hint))
+            Text(stringResource(R.string.gamemenuhorz))
         }
         Button(onClick = onNextClick,
-            modifier = Modifier.width(60.dp)
+            modifier = Modifier.width(60.dp).height(150.dp)
         ) {
-            Text(stringResource(R.string.menu))
+            Text(stringResource(R.string.menuhorz))
         }
         Spacer(modifier = Modifier.height(10.dp))
     }

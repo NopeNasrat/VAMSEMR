@@ -40,8 +40,10 @@
     <string name="no">Nie</string>
 
 
-    <string name="hint">Nápoveda</string>
-    <string name="menu">Menu</string>
+    <string name="gamemenu">Menu</string>
+    <string name="menu">Config</string>
+    <string name="gamemenuhorz">Me\nn\nu</string>
+    <string name="menuhorz">C\no\nn\nf\ni\ng</string>
 
     <string name="playerPic">P</string>
     <string name="finishPic">F</string>
@@ -52,8 +54,15 @@
     <string name="endnewgame">Nová Hra!</string>
 
 
+
     <string name="hintmenu">Nápoveda</string>
     <string name="hintmenutext">Naozaj chces nápovedu %d políčok za %d bodov?</string>
+
+    <string name="loadmenu">Načítanie hry</string>
+    <string name="loadmenutext">Naozaj chces načítať hru?</string>
+
+    <string name="savemenu">Uloženie hry</string>
+    <string name="savemenutext">Naozaj chces uložiť aktualnu hru?</string>
 
     //error
 
