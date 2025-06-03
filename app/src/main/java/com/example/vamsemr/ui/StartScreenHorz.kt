@@ -41,6 +41,7 @@ import com.example.vamsemr.Navigation.ConfirmExitOnBackHandler
 import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.Navigation.Screen
 import com.example.vamsemr.R
+import com.example.vamsemr.core.SoundManager
 import com.example.vamsemr.data.MazeInfo
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.Player
@@ -64,6 +65,7 @@ fun StartScreenHorz (
 ){
 
     ConfirmExitOnBackHandler {
+        SoundManager.release()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 

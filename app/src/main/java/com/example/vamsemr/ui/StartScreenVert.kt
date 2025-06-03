@@ -40,6 +40,7 @@ import com.example.vamsemr.Navigation.ConfirmExitOnBackHandler
 import com.example.vamsemr.Navigation.NavigationDestination
 import com.example.vamsemr.Navigation.Screen
 import com.example.vamsemr.R
+import com.example.vamsemr.core.SoundManager
 import com.example.vamsemr.data.Player
 import com.example.vamsemr.data.PlayerViewModel
 import com.example.vamsemr.data.ScreenViewModel
@@ -62,6 +63,7 @@ fun MainScreenV1(
 ) {
 
     ConfirmExitOnBackHandler {
+        SoundManager.release()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 

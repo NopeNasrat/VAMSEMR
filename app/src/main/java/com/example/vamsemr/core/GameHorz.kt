@@ -68,6 +68,7 @@ fun GameHorz(
     var isSoundMuted by remember { mutableStateOf(false) }
 
     ConfirmExitOnBackHandler {
+        SoundManager.release()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
@@ -167,8 +168,10 @@ fun GameHorz(
             onSaveClick = { showConfirmDialogSave = true },
             onLoadClick = { showConfirmDialogLoad = true },
             onHintClick = { showConfirmDialogHint = true },
-            onToggleSound = { isSoundMuted = !isSoundMuted },
-            isSoundMuted = isSoundMuted
+            onToggleSound = {
+                mazeInfoViewModel.setSounds(!mazeInfoViewModel.MazeInfo.value.sounds)
+            },
+            isSoundMuted = !mazeInfoViewModel.MazeInfo.value.sounds
         )
     }
 

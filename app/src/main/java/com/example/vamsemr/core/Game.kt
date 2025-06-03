@@ -98,6 +98,7 @@ fun Game(
 
 
     ConfirmExitOnBackHandler {
+        SoundManager.release()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 

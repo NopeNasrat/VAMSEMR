@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">VAMSEMR</string>
-
+    <string name="app_name">Maze Game</string>
+//VAMSEMR
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="start">Start</string>
@@ -68,7 +68,7 @@
     <string name="savemenutext">Naozaj chces uložiť aktualnu hru?</string>
 
     <string name="close">Close</string>
-// https://pixabay.com/sound-effects/search/tick/
+    // https://pixabay.com/sound-effects/search/tick/
     <string name="unmute">Unmute</string>
     <string name="mute">Mute</string>
 
