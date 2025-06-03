@@ -65,6 +65,7 @@ fun GameHorz(
     var showConfirmDialogHint by remember { mutableStateOf(false) }
     var showConfirmDialogSave by remember { mutableStateOf(false) }
     var showConfirmDialogLoad by remember { mutableStateOf(false) }
+    var isSoundMuted by remember { mutableStateOf(false) }
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
@@ -165,7 +166,9 @@ fun GameHorz(
             onDismiss = { showConfirmDialogMenu = false },
             onSaveClick = { showConfirmDialogSave = true },
             onLoadClick = { showConfirmDialogLoad = true },
-            onHintClick = { showConfirmDialogHint = true }
+            onHintClick = { showConfirmDialogHint = true },
+            onToggleSound = { isSoundMuted = !isSoundMuted },
+            isSoundMuted = isSoundMuted
         )
     }
 

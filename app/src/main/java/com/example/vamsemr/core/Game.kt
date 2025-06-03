@@ -59,6 +59,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
@@ -93,6 +94,8 @@ fun Game(
     var showConfirmDialogHint by remember { mutableStateOf(false) }
     var showConfirmDialogSave by remember { mutableStateOf(false) }
     var showConfirmDialogLoad by remember { mutableStateOf(false) }
+    var isSoundMuted by remember { mutableStateOf(false) }
+
 
     ConfirmExitOnBackHandler {
         android.os.Process.killProcess(android.os.Process.myPid())
@@ -195,9 +198,17 @@ fun Game(
             onDismiss = { showConfirmDialogMenu = false },
             onSaveClick = { showConfirmDialogSave = true },
             onLoadClick = { showConfirmDialogLoad = true },
-            onHintClick = { showConfirmDialogHint = true }
+            onHintClick = { showConfirmDialogHint = true },
+            onToggleSound = {
+                mazeInfoViewModel.setSounds(!mazeInfoViewModel.MazeInfo.value.sounds)
+            },
+            isSoundMuted = !mazeInfoViewModel.MazeInfo.value.sounds
         )
     }
+
+
+
+
 
     if (showConfirmDialogSave) {
         ConfirmCustomDialog(
@@ -333,16 +344,34 @@ fun Game(
 
 }
 
+
 @Composable
 fun GameMenuDialog(
     onDismiss: () -> Unit,
     onSaveClick: () -> Unit,
     onLoadClick: () -> Unit,
-    onHintClick: () -> Unit
+    onHintClick: () -> Unit,
+    onToggleSound: () -> Unit,
+    isSoundMuted: Boolean
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Game Menu") },
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.realgamemenu), modifier = Modifier.weight(1f))
+                IconButton(onClick = onToggleSound) {
+                    Icon(
+                        painter = if (isSoundMuted) painterResource(R.drawable.volume_off) else painterResource(R.drawable.volume_up),
+                        contentDescription = if (isSoundMuted) stringResource(R.string.unmute) else stringResource(R.string.mute),
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            }
+        },
         text = {
             Column {
                 Button(
@@ -352,7 +381,7 @@ fun GameMenuDialog(
                     },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
 
                 Button(
@@ -362,7 +391,7 @@ fun GameMenuDialog(
                     },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
-                    Text("Load")
+                    Text(stringResource(R.string.load))
                 }
 
                 Button(
@@ -372,14 +401,14 @@ fun GameMenuDialog(
                     },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
-                    Text("Hint")
+                    Text(stringResource(R.string.hint))
                 }
 
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             }
         },
@@ -387,6 +416,7 @@ fun GameMenuDialog(
         dismissButton = {}
     )
 }
+
 
 /*
 @Composable

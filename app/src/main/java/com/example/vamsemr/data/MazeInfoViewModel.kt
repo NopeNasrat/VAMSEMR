@@ -63,5 +63,15 @@ class MazeInfoViewModel : ViewModel() {
         )
     }
 
+    fun setSounds(sounds: Boolean) {
+        _MazeInfo.value = _MazeInfo.value.copy(
+            sounds = sounds
+        )
+    }
 
+    fun allowSounds(soundPermision: Boolean = true) {
+        _MazeInfo.value = _MazeInfo.value.copy(
+            soundPermision = soundPermision
+        )
+    }
 }

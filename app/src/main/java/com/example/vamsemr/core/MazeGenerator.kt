@@ -321,6 +321,17 @@ fun movePlayer(
 
     forceUpdateMaze(gameViewModel = gameViewModel,
         maze = maze)
+
+
+
+    if (mazeInfoViewModel.MazeInfo.value.sounds) {
+        SoundManager.playTick()
+    }
+
+
+
+
+
     /*
     val newMazeGrid = maze.maze.map { row ->
         row.map { cell -> cell.copy() }.toTypedArray()

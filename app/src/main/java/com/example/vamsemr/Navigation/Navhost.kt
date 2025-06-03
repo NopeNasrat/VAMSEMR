@@ -11,19 +11,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import com.example.inventory.ui.ItemViewModel
 import com.example.vamsemr.core.Game
 import com.example.vamsemr.core.GameHorz
+import com.example.vamsemr.core.SoundManager
 import com.example.vamsemr.data.GameViewModel
 import com.example.vamsemr.data.MazeInfoViewModel
 import com.example.vamsemr.data.PlayerViewModel
 import com.example.vamsemr.data.ScreenViewModel
 import com.example.vamsemr.data.sql.MazeViewModel
-import com.example.vamsemr.ui.HomeDestination
-import com.example.vamsemr.ui.HomeDestinationvert2
 import com.example.vamsemr.ui.MainScreenV1
 import com.example.vamsemr.ui.StartScreenHorz
 import com.example.vamsemr.ui.StartScreenVert2
+
+
+
 
 @Composable
 fun VamsemrNavHost(
@@ -40,6 +43,12 @@ fun VamsemrNavHost(
     val configuration = LocalConfiguration.current
     val screenViewModel: ScreenViewModel = viewModel()
     val appStage by screenViewModel.stage.collectAsState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        SoundManager.init(context)
+    }
 
     LaunchedEffect(configuration.orientation, appStage) {
         val currentRoute = navController.currentDestination?.route
@@ -81,7 +90,6 @@ fun VamsemrNavHost(
 
         }
     }
-
 
     NavHost(
         navController = navController,

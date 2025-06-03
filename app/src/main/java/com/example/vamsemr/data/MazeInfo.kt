@@ -8,5 +8,7 @@ data class MazeInfo(
     val playerX: Int = -1,
     val playerY: Int = -1,
     val skorenow: Int = 0,
-    val zapisane: Boolean = false
+    val zapisane: Boolean = false,
+    val sounds: Boolean = true,
+    val soundPermision: Boolean = false
 )
