@@ -3,6 +3,7 @@ package com.example.inventory.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Kód prevzatý a následne upravený zo cvičení VAPMZ.
 
 /**
  * Entity data class represents a single row in the database.

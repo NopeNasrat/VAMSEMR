@@ -1,5 +1,7 @@
 package com.example.inventory.ui
 
+// Kód prevzatý a následne upravený zo cvičení VAPMZ.
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-// ViewModel pre správu hráčov
+// ViewModel pre spravu hracov
 class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
     fun addItem(name: String, skore: Int, games: Int) {

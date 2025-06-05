@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Kód prevzatý a následne upravený zo cvičení VAPMZ.
+
 package com.example.inventory.data
 
 import android.content.Context

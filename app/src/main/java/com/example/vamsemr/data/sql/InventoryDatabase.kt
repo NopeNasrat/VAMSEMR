@@ -1,5 +1,7 @@
 package com.example.inventory.data
 
+// Kód prevzatý a následne upravený zo cvičení VAPMZ.
+
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room

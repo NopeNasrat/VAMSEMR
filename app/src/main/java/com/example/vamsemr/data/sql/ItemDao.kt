@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
+// Kód prevzatý a následne upravený zo cvičení VAPMZ.
 
 @Dao
 interface ItemDao {

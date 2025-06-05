@@ -18,6 +18,8 @@ package com.example.inventory.data
 
 import kotlinx.coroutines.flow.Flow
 
+// Kód prevzatý a následne upravený zo cvičení VAPMZ.
+
 /**
  * Repository that provides insert, update, delete, and retrieve of [Item] from a given data source.
  */
