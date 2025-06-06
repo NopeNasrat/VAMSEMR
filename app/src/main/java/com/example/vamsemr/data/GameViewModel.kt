@@ -17,27 +17,45 @@ import com.example.vamsemr.core.verifyMaze
 import com.example.vamsemr.data.sql.MazeViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Game viewModel na samotne bludisko
+ *
+ * @author Bc. Fabo Peter
+ */
 class GameViewModel : ViewModel() {
     private var x: Int = 2
     private var y: Int = 2
     private val _Maze = mutableStateOf(Maze(x,y))
     val Maze: State<Maze> get() = _Maze
 
+    /**
+     * zmen velkost a resetni bludisko na novu velkost
+     */
     fun setAndResetMaze(newX: Int, newY: Int,mazeInfoViewModel: MazeInfoViewModel) {
         updateSize(newX, newY)
         resetMaze(mazeInfoViewModel)
     }
 
+    /**
+     * zmen rozmer bludiska
+     */
     fun updateSize(newX: Int, newY: Int) {
         if (newX >= 2) x = newX
         if (newY >= 2) y = newY
     }
 
-
+    /**
+     * updatni Maze
+     */
     fun updateMaze(newMaze: Maze) {
         _Maze.value = newMaze
     }
 
+    /**
+     * Vygeneruj nove bludisko
+     *
+     * @param mazeInfoViewModel aktualizuj informacie na nove ku bludisku
+     */
     fun resetMaze(mazeInfoViewModel: MazeInfoViewModel) {
         var newMaze: Maze
         do {
@@ -54,6 +72,14 @@ class GameViewModel : ViewModel() {
         findPlayer(this, mazeInfoViewModel)
     }
 
+    /**
+     * uloz bludisko do databazy
+     *
+     * @param gameViewModel 2d bludisko
+     * @param mazeInfoViewModel informacie o bludisko
+     * @param playerViewModel informacie o aktualnom hracovi
+     * @param mazeviewModel databaza bludisiek
+     */
     fun saveMaze(gameViewModel: GameViewModel,
                  mazeInfoViewModel: MazeInfoViewModel,
                  playerViewModel: PlayerViewModel,
@@ -65,7 +91,14 @@ class GameViewModel : ViewModel() {
             playerViewModel = playerViewModel)
     }
 
-
+    /**
+     * nacitaj bludisko z databazy
+     *
+     * @param gameViewModel 2d bludisko
+     * @param mazeInfoViewModel informacie o bludisko
+     * @param playerViewModel informacie o aktualnom hracovi
+     * @param mazeviewModel databaza bludisiek
+     */
     fun loadMaze(
         gameViewModel: GameViewModel,
         mazeInfoViewModel: MazeInfoViewModel,

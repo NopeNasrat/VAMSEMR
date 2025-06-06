@@ -73,7 +73,19 @@ object GameScreen : NavigationDestination {
     override val titleRes: Int = 0
 }
 
-
+/**
+ * Screen s hrou na vertikalne rozpolozenie.
+ *
+ * @param viewModel Player databaza
+ * @param playerViewModel Info o aktualnom hracovi
+ * @param screenViewModel Nastavenie stage na screeny
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param gameViewModel 2D maze pole hry
+ * @param navController Navigacia cez screeny
+ * @param mazeviewModel Databaza z maze
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun Game(
     viewModel: ItemViewModel,
@@ -345,7 +357,16 @@ fun Game(
 
 }
 
-
+/**
+ * Zobrazenie Menu na rozsirene nastavenia
+ *
+ * @param onDismiss pri zavreti
+ * @param onSaveClick pri kliknuti na save spravi: {}
+ * @param onLoadClick pri kliknuti na load spravi: {}
+ * @param onHintClick pri kliknuti na hint spravi: {}
+ * @param onToggleSound pri kliknuti na sound spravi: {}
+ * @param isSoundMuted aktualna hodnota bool
+ */
 @Composable
 fun GameMenuDialog(
     onDismiss: () -> Unit,
@@ -444,6 +465,15 @@ fun ConfirmHintDialog(
     )
 }*/
 
+/**
+ * Custom dialog kde staci zadat iba
+ * @param onConfirm co spravi pri confirm
+ * @param onDismiss co spravi pri dismiss
+ * @param title title spravy v dialogu
+ * @param dialog sprava v dialogu
+ * @param confirm sprava v tlacitku confim
+ * @param dismis sprava v tlacitku dismis
+ */
 @Composable
 fun ConfirmCustomDialog(
     onConfirm: () -> Unit,
@@ -470,7 +500,15 @@ fun ConfirmCustomDialog(
     )
 }
 
-
+/**
+ * Vyherny/nevyherny dialog
+ *
+ *
+ * @param playerViewModel Aktualny hrac
+ * @param resultTextRes Custom title text
+ * @param scorenow Aktualne herne skore
+ * @param onDismiss Tlacitko s novou hrou
+ */
 @Composable
 fun GameResultDialog(
     playerViewModel: PlayerViewModel,
@@ -524,7 +562,11 @@ fun ConfirmReturnToMenuDialog(
     )
 }*/
 
-
+/**
+ * Zobrazenie tlacitok na pohyb
+ *
+ * pouzije callback pri stlaceni konkretneho tlacitka
+ */
 @Composable
 fun ArrowPad(
     onUp: () -> Unit = {},
@@ -590,7 +632,9 @@ fun ArrowPad(
     }
 }
 
-
+/**
+ * Custom tlacitka na UI ktore su pouzite na rozsirene menu
+ */
 @Composable
 fun ButtonsRowGame(
     modifier: Modifier = Modifier,
@@ -612,7 +656,12 @@ fun ButtonsRowGame(
     }
 }
 
-
+/**
+ * vykreslenie bludiska na canvas
+ *
+ * @param maze 2d bludisko
+ * @param mazeInfoViewModel informacie k bludisku
+ */
 @Composable
 fun MazeCanvas(
     maze: Maze,
@@ -704,7 +753,9 @@ fun MazeCanvas(
     }
 }
 
-
+/**
+ * Kontrolne zobrazenie informacii o zadanych config hodnotach k bludisku
+ */
 @Composable
 fun PlayerInfoSection(player: Player, mazeInfo: MazeInfo, modifier: Modifier = Modifier) {
     Column(

@@ -42,7 +42,16 @@ object HomeDestinationvert2 : NavigationDestination {
     override val titleRes: Int = 0
 }
 
-
+/**
+ * Screen na vyber velkosti bludiska
+ *
+ * @param playerViewModel Info o aktualnom hracovi
+ * @param screenViewModel Nastavenie stage na screeny
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param navController Navigacia cez screeny
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun StartScreenVert2(
     screenViewModel: ScreenViewModel,
@@ -105,7 +114,9 @@ fun StartScreenVert2(
     }
 }
 
-
+/**
+ * Zobrazenie info o aktuallnom hracovy do UI
+ */
 @Composable
 fun PlayerInfoSection(player: Player, modifier: Modifier = Modifier) {
     Column(
@@ -151,7 +162,11 @@ fun PlayerInfoSection(player: Player, modifier: Modifier = Modifier) {
 }
 
 
-
+/**
+ * Vyber pozadovaneho bludiska
+ * (moznost zmeny rozmerou, zmenou konstant: small, medium, large, huge)
+ *
+ */
 @Composable
 fun MazeSizeSection(
     modifier: Modifier = Modifier,
@@ -252,8 +267,9 @@ fun MazeSizeSection(
 }
 
 
-
-
+/**
+ * navigacne tlacitna na pohyb medzi screenami
+ */
 @Composable
 fun BottomButtonsRow(
     modifier: Modifier = Modifier,

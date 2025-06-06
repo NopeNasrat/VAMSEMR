@@ -52,7 +52,16 @@ object HomeDestination : NavigationDestination {
 }
 
 
-
+/**
+ * Hlavna zaciatocna obrazovna, ktora obsahuje vyber hracov
+ *
+ * @param viewModel Player databaza
+ * @param screenViewModel Nastavenie stage na screeny
+ * @param navController Navigacia cez screeny
+ * @param playerViewModel Vyber aktualneho noveho hraca
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun MainScreenV1(
     screenViewModel: ScreenViewModel,
@@ -140,6 +149,9 @@ fun MainScreenV1(
 
 }
 
+/**
+ * tlacitka na pridatie/odobratie hracov z databazy
+ */
 @Composable
 fun TopButton(onAddClick: () -> Unit, onRemoveClick: () -> Unit) {
     Row(
@@ -155,6 +167,9 @@ fun TopButton(onAddClick: () -> Unit, onRemoveClick: () -> Unit) {
     }
 }
 
+/**
+ * pridat noveho hraca do databazy
+ */
 @Composable
 fun AddUserDialog(
     onConfirm: (String) -> Unit,
@@ -199,6 +214,9 @@ fun AddUserDialog(
     )
 }
 
+/**
+ * vymazat hraca z databazy za pomocou jeho ID
+ */
 @Composable
 fun RemoveUserDialog(
     onConfirm: (Int) -> Unit,
@@ -254,7 +272,13 @@ fun RemoveUserDialog(
     )
 }
 
-
+/**
+ * Zobrazenie hracov v scroable boxe
+ *
+ * @param viewModel Databaza s hracami
+ * @param selectedItemId zobrazeny hrac
+ * @param onItemSelected ktory je zobrazeny hrac
+ */
 @Composable
 fun ScrollableBoxSelection(
     viewModel: ItemViewModel,
@@ -282,7 +306,9 @@ fun ScrollableBoxSelection(
     }
 }
 
-
+/**
+ * Jednotlivy hrac z databazy
+ */
 @Composable
 fun SelectableBox(
     item: Item,
@@ -315,10 +341,9 @@ fun SelectableBox(
 }
 
 
-
-
-
-
+/**
+ * Posun na dalsi screen
+ */
 @Composable
 fun BottomButton(modifier: Modifier = Modifier, onNextClick: () -> Unit,buttontext: String = stringResource(R.string.next)) {
     Button(

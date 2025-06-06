@@ -8,6 +8,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import com.example.vamsemr.R
 
+/**
+ * Dialog na ukoncenie appky
+ *
+ * @param title title na sprave o ukonceny appky
+ * @param message message o ukonceny appky
+ * @param onConfirmExit lambda funkia pri ukonceny appky
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun ConfirmExitOnBackHandler(
     title: String = stringResource(R.string.exitapp),

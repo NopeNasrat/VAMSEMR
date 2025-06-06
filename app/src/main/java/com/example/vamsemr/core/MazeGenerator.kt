@@ -25,6 +25,22 @@ fun resetMaze(gameViewModel: GameViewModel) {
     gameViewModel.resetMaze()
 }*/
 
+/**
+ * Hlavna Logika Hry + ukladanie/nacitanie hry
+ *
+ *
+ * @author Bc. Fabo Peter
+ */
+
+
+/**
+ * Ulozenie kompresovanieho bludiska do databazy
+ *
+ * @param playerViewModel Info o aktualnom hracovi
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeviewModel Databaza z maze
+ */
 fun compressMaze(gameViewModel: GameViewModel,
                  mazeInfoViewModel: MazeInfoViewModel,
                  playerViewModel: PlayerViewModel,
@@ -53,6 +69,13 @@ fun compressMaze(gameViewModel: GameViewModel,
     mazeviewModel.addOrUpdateMaze(datamaze)
     return true
 }
+
+/**
+ *  preevod '1' a '0' na 8bit znak
+ *
+ * @param binaryString su 1 a 0 v stringu
+ * @return 8bit znaky
+ */
 fun binaryStringToCompressedString(binaryString: String): String {
     val paddedLength = ((binaryString.length + 7) / 8) * 8
     val paddedString = binaryString.padEnd(paddedLength, '0')
@@ -65,6 +88,13 @@ fun binaryStringToCompressedString(binaryString: String): String {
     }
     return sb.toString()
 }
+
+/**
+ * prevod 8bit znakov na 1 a 0
+ *
+ * @param compressed 8bit znaky
+ * @return string s 1 a 0
+ */
 fun compressedStringToBinaryString(compressed: String): String {
     val sb = StringBuilder()
     for (char in compressed) {
@@ -75,6 +105,9 @@ fun compressedStringToBinaryString(compressed: String): String {
     return sb.toString()
 }
 
+/**
+ * prevod celeho bludiska na 1 a 0
+ */
 fun mazeToString(maze: Maze): String {
     val sb = StringBuilder()
     for (y in 0 until maze.height) {
@@ -85,6 +118,10 @@ fun mazeToString(maze: Maze): String {
     }
     return sb.toString()
 }
+
+/**
+ * prevod cell na 1 a 0
+ */
 fun cellToString(cell: Cell): String {
     return buildString {
         append(if (cell.top) '1' else '0')
@@ -93,6 +130,10 @@ fun cellToString(cell: Cell): String {
         append(if (cell.right) '1' else '0')
     }
 }
+
+/**
+ * prevod 0 a 1 na maze
+ */
 fun stringToMaze(binary: String, cmaze: compMazes): Maze {
     val maze = Maze(cmaze.height,cmaze.width)
     var index = 0
@@ -117,7 +158,14 @@ fun stringToMaze(binary: String, cmaze: compMazes): Maze {
 
 
 
-
+/**
+ * Nacitanie kompresovanieho bludiska z databazy
+ *
+ * @param playerViewModel Info o aktualnom hracovi
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeviewModel Databaza z maze
+ */
 suspend fun decompressMaze(gameViewModel: GameViewModel,
                    mazeInfoViewModel: MazeInfoViewModel,
                    playerViewModel: PlayerViewModel,
@@ -156,7 +204,14 @@ suspend fun decompressMaze(gameViewModel: GameViewModel,
 }
 
 
-
+/**
+ * funkcia na kontrolu vyhry
+ *
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ *
+ * @return true->uspesna vyhra else false -> prehra
+ */
 @Composable
 fun winCheck(
     gameViewModel: GameViewModel,
@@ -183,7 +238,14 @@ fun winCheck(
 
 
 
-
+/**
+ * funkcia na overenie/najdenie finishu
+ *
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ *
+ * @return true->uspesne else false -> neuspesne najdene
+ */
 fun findFinish (
     gameViewModel: GameViewModel,
     mazeInfoViewModel: MazeInfoViewModel
@@ -223,7 +285,11 @@ fun findFinish (
     }
 }
 
-
+/**
+ * funkcia na zapisanie aktualneho skore
+ *
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ */
 fun setSkore(skore: Int,
              mazeInfoViewModel: MazeInfoViewModel
 ){
@@ -234,6 +300,14 @@ fun setSkore(skore: Int,
     )
 }
 
+/**
+ * funkcia na overenie/najdenie hraca
+ *
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ *
+ * @return true->uspesne else false -> neuspesne najdene
+ */
 fun findPlayer (
     gameViewModel: GameViewModel,
     mazeInfoViewModel: MazeInfoViewModel
@@ -271,6 +345,13 @@ fun findPlayer (
     }
 }
 
+/**
+ * funkcia na pohnutie hraca v bludisku
+ *
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param smer smer z enum triedy na urcenie smeru kam sa ma hrac pohnut
+ */
 fun movePlayer(
     gameViewModel: GameViewModel,
     mazeInfoViewModel: MazeInfoViewModel,
@@ -345,6 +426,12 @@ fun movePlayer(
     gameViewModel.updateMaze(newMaze)*/
 }
 
+/**
+ * funkcia na vynutenie aktualizacie bludiska
+ *
+ * @param gameViewModel 2D maze pole hry
+ * @param maze none/nove bludisko na update
+ */
 fun forceUpdateMaze(gameViewModel: GameViewModel, maze: Maze = gameViewModel.Maze.value) {
     val newMazeGrid = maze.maze.map { row ->
         row.map { cell -> cell.copy() }.toTypedArray()
@@ -358,7 +445,11 @@ fun forceUpdateMaze(gameViewModel: GameViewModel, maze: Maze = gameViewModel.Maz
     gameViewModel.updateMaze(newMaze)
 }
 
-
+/**
+ * funkcia na vytvorenie finishu na nahodnom mieste
+ *
+ * @param maze 2D maze hry
+ */
 fun randomFinish(maze: Maze) {
     for (row in maze.maze) {
         for (cell in row) {
@@ -374,7 +465,13 @@ fun randomFinish(maze: Maze) {
     maze.maze[finishY][finishX].flood = 1
 }
 
-
+/**
+ * funkcia overenie mezu ci splna vsetky poziadavky
+ * (ci obsahuje hraca a ciel)
+ *
+ * @param maze 2D maze hry
+ * @return true->uspesne else false -> neuspesne
+ */
 fun verifyMaze(maze: Maze): Boolean {
     var finishFound = false
     var playerFound = false
@@ -392,8 +489,12 @@ fun verifyMaze(maze: Maze): Boolean {
 }
 
 
-
-
+/**
+ * funkcia na vygenerovanie hraca ktory je maximalne vzdialeny od ciela,
+ * alebo nahodne policko >= 150 policok od ciela
+ *
+ * @param maze 2D maze hry
+ */
 fun generatePlayer(maze: Maze) {
     val highFloods = maze.maze.flatten()
         .map { it.flood }
@@ -421,6 +522,11 @@ fun generatePlayer(maze: Maze) {
     maze.maze[playerY][playerX].player = true
 }
 
+/**
+ * odstranenie viditelnych hintov z bludisku
+ *
+ * @param gameViewModel 2D maze pole hry
+ */
 fun removeHint(gameViewModel: GameViewModel) {
     val maze = gameViewModel.Maze.value
     for (y in 0 until maze.height) {
@@ -431,7 +537,15 @@ fun removeHint(gameViewModel: GameViewModel) {
     gameViewModel.updateMaze(maze.copy())
 }
 
-
+/**
+ * Rekurzívne vytvára nápovedu pre hráča z aktuálnej pozície (alebo zadanej pozície) v bludisku. Postupuje po bunkách s nižšou flood hodnotou a označuje ich hodnotou hint.
+ *
+ * @param gameViewModel 2D maze pole hry
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param x suradnica aktualneho policka, bud hraca/nasledujuceho policka na hint
+ * @param y suradnica aktualneho policka, bud hraca/nasledujuceho policka na hint
+ * @param counter pocet dalsich policok na zobrazenie hintu
+ */
 fun hint(gameViewModel: GameViewModel,mazeInfoViewModel: MazeInfoViewModel,x: Int = -1,y: Int = -1, counter: Int = 0) {
     var nextX = x
     var nextY = y
@@ -485,6 +599,11 @@ fun hint(gameViewModel: GameViewModel,mazeInfoViewModel: MazeInfoViewModel,x: In
     }
 }
 
+/**
+ * funkcia na vykonanie flood algoritmu od ciela v bludisku
+ *
+ * @param maze 2D maze hry
+ */
 fun floodMaze(maze: Maze) {
     var startX = -1
     var startY = -1
@@ -532,9 +651,14 @@ fun floodMaze(maze: Maze) {
 }
 
 
-
-
-
+/**
+ * nahodne vygenerovanie stien bludiska
+ *
+ * @param x aktualna cell
+ * @param y aktualna cell
+ * @param maze bludisko
+ * @param randwall % sanca na odstranenie dodatkovej steny (0 == off)
+ */
 fun generateMaze(
     x: Int = 0,
     y: Int = 0,

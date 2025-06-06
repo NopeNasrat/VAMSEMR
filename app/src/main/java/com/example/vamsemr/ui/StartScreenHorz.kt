@@ -53,7 +53,17 @@ object HomeDestinationHorz : NavigationDestination {
     override val route = "homehorz"
     override val titleRes: Int = 0
 }
-
+/**
+ * Horizontalny configuracny screen na vyber aktualneho hraca + vekost bludiska
+ *
+ * @param viewModel Player databaza
+ * @param playerViewModel Info o aktualnom hracovi
+ * @param screenViewModel Nastavenie stage na screeny
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param navController Navigacia cez screeny
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun StartScreenHorz (
     screenViewModel: ScreenViewModel,
@@ -234,11 +244,10 @@ fun StartScreenHorz (
 }
 
 
-
-
-
-
-
+/**
+ * Buttony pridanie/odstranenie hraca do/z databazy
+ *
+ */
 @Composable
 fun TopButtonHorz(onAddClick: () -> Unit, onRemoveClick: () -> Unit) {
     Column(
@@ -262,10 +271,13 @@ fun TopButtonHorz(onAddClick: () -> Unit, onRemoveClick: () -> Unit) {
 }
 
 
-
-
-
-
+/**
+ * Zobrazenie hracov v scroable boxe, horizontalne nastavenia
+ *
+ * @param viewModel Databaza s hracami
+ * @param selectedItemId zobrazeny hrac
+ * @param onItemSelected ktory je zobrazeny hrac
+ */
 @Composable
 fun ScrollableBoxSelectionHorz(
     viewModel: ItemViewModel,
@@ -294,7 +306,9 @@ fun ScrollableBoxSelectionHorz(
 }
 
 
-
+/**
+ * Jednotlivy hrac z databazy, horizontalne nastavenia
+ */
 @Composable
 fun SelectableBoxHorz(
     item: Item,

@@ -27,7 +27,15 @@ import com.example.vamsemr.ui.StartScreenVert2
 
 
 
-
+/**
+ * Hlavna navigacia v appke
+ *
+ * @param viewModel Player databaza
+ * @param navController Navigacia cez screeny
+ * @param mazeviewModel Databaza z maze
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun VamsemrNavHost(
     navController: NavHostController,
@@ -46,10 +54,16 @@ fun VamsemrNavHost(
 
     val context = LocalContext.current
 
+    /**
+     * inicializacia zvukou
+     */
     LaunchedEffect(Unit) {
         SoundManager.init(context)
     }
 
+    /**
+     * automaticke otacanie screenu na specificky stage
+     */
     LaunchedEffect(configuration.orientation, appStage) {
         val currentRoute = navController.currentDestination?.route
 

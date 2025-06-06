@@ -24,7 +24,12 @@ import com.example.vamsemr.data.sql.MazeViewModel
 import com.example.vamsemr.data.sql.MazeViewModelFactory
 import com.example.vamsemr.ui.theme.VAMSEMRTheme
 import com.example.vamsemr.ui.*
-
+/**
+ * Hra Bludisko,
+ * hrac musi najst cestu k cielu, aby hru vyhral
+ *
+ * @author Bc. Fabo Peter
+ */
 class MainActivity : ComponentActivity() {
 /*
     private val viewModel: ItemViewModel by viewModels {

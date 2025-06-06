@@ -11,8 +11,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-// Kód prevzatý a následne upravený zo cvičení VAPMZ.
 
+/**
+ * Viewmodel na databazu Bludisk
+ *
+ *
+ * @authors Bc. Fabo Peter, Cviká z VAPMZ
+ */
 class MazeViewModel(private val mazesRepository: MazesRepository) : ViewModel() {
 
     fun addMaze(maze: compMazes) {

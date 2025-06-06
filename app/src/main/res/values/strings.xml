@@ -68,11 +68,9 @@
     <string name="savemenutext">Naozaj chces uložiť aktualnu hru?</string>
 
     <string name="close">Close</string>
-    // https://pixabay.com/sound-effects/search/tick/
+
     <string name="unmute">Unmute</string>
     <string name="mute">Mute</string>
-
-
 
     //error
 

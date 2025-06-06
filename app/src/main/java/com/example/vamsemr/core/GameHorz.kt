@@ -44,7 +44,19 @@ object GameScreenHorz : NavigationDestination {
     override val titleRes: Int = 0
 }
 
-
+/**
+ * Screen s hrou na horizontalne rozpolozenie.
+ *
+ * @param viewModel Player databaza
+ * @param playerViewModel Info o aktualnom hracovi
+ * @param screenViewModel Nastavenie stage na screeny
+ * @param mazeInfoViewModel Zdruzene informacie o aktualnej hre
+ * @param gameViewModel 2D maze pole hry
+ * @param navController Navigacia cez screeny
+ * @param mazeviewModel Databaza z maze
+ *
+ * @author Bc. Fabo Peter
+ */
 @Composable
 fun GameHorz(
     viewModel: ItemViewModel,
@@ -283,7 +295,9 @@ fun GameHorz(
 
 }
 
-
+/**
+ * Custom tlacitka na UI(pouzite v horizontalnom screene) ktore su pouzite na rozsirene menu
+ */
 @Composable
 fun ButtonsCollumGame(
     modifier: Modifier = Modifier,

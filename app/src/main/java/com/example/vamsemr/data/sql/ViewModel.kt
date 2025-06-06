@@ -12,7 +12,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-// ViewModel pre spravu hracov
+/**
+ * Viewmodel na databazu hracov
+ *
+ *
+ * @authors Bc. Fabo Peter, Cviká z VAPMZ
+ */
 class ItemViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
     fun addItem(name: String, skore: Int, games: Int) {
